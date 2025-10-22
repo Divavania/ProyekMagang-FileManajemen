@@ -121,8 +121,20 @@
     <!-- Bagian kanan (form login putih) -->
     <div class="login-right">
       <div class="login-content text-center">
-        <img src="{{ asset('images/radar-madiun-logo.png') }}" alt="Radar Madiun" width="120" class="mb-3">
-        <h2>Radar Files</h2>
+        <img src="{{ asset('images/radar-madiun-logo.png') }}" alt="Radar Madiun" width="120" class="mb-5">
+
+        {{-- ALERT pesan login --}}
+        @if (session('error'))
+          <div class="alert alert-danger alert-dismissible fade show mt-3 py-2 px-3 text-center" role="alert">
+            {{ session('error') }}
+          </div>
+        @endif
+
+        @if (session('success'))
+          <div class="alert alert-success alert-dismissible fade show mt-3 py-2 px-3 text-center" role="alert">
+            {{ session('success') }}
+          </div>
+        @endif
 
         <form method="POST" action="{{ route('login') }}">
           @csrf
@@ -145,9 +157,8 @@
     </div>
   </div>
 
-  <!-- JS Bootstrap dan SweetAlert -->
+  <!-- JS Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <!-- Toggle Password -->
   <script>
@@ -160,30 +171,15 @@
       this.classList.toggle('bi-eye');
       this.classList.toggle('bi-eye-slash');
     });
-  </script>
 
-  <!-- SweetAlert Notifikasi -->
-  @if (session('success'))
-  <script>
-    Swal.fire({
-      icon: 'success',
-      title: 'Berhasil Masuk',
-      text: '{{ session('success') }}',
-      showConfirmButton: false,
-      timer: 2000
-    });
+    // Auto-hide alert setelah 3 detik
+    setTimeout(() => {
+      const alertEl = document.querySelector('.alert');
+      if (alertEl) {
+        const bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
+        bsAlert.close();
+      }
+    }, 3000);
   </script>
-  @endif
-
-  @if (session('error'))
-  <script>
-    Swal.fire({
-      icon: 'error',
-      title: 'Gagal Masuk',
-      text: '{{ session('error') }}',
-      showConfirmButton: true,
-    });
-  </script>
-  @endif
 </body>
 </html>
