@@ -58,27 +58,35 @@ Route::post('/reset-password', function (Request $request) {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-    Route::post('/profile/update-info', [ProfileController::class, 'updateInfo'])->name('profile.updateInfo');
-    Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
-    Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.updatePhoto');
-    Route::delete('/profile/delete-photo', [ProfileController::class, 'deletePhoto'])->name('profile.deletePhoto');
-});
+    Route::middleware('auth')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+        Route::post('/profile/update-info', [ProfileController::class, 'updateInfo'])->name('profile.updateInfo');
+        Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+        Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.updatePhoto');
+        Route::delete('/profile/delete-photo', [ProfileController::class, 'deletePhoto'])->name('profile.deletePhoto');
+    });
 
-// Pastikan ini ada di dalam middleware auth, ya
-Route::middleware(['auth'])->group(function () {
-    Route::get('/folders', [FolderController::class, 'index'])->name('folders.index');
-    Route::get('/folders/create', [FolderController::class, 'create'])->name('folders.create');
-    Route::put('/folders/{id}', [FolderController::class, 'update'])->name('folders.update');
-    Route::post('/folders/store', [FolderController::class, 'store'])->name('store.folder');
-    Route::post('/upload-folder', [FileController::class, 'storeFolder'])->name('store.upload.folder');
-    Route::delete('/folders/{id}', [FolderController::class, 'destroy'])->name('folders.destroy');
-    Route::get('/folders/{id}', [FolderController::class, 'show'])->name('folders.show');
+    // Pastikan ini ada di dalam middleware auth, ya
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/folders', [FolderController::class, 'index'])->name('folders.index');
+        Route::get('/folders/create', [FolderController::class, 'create'])->name('folders.create');
+        Route::put('/folders/{id}', [FolderController::class, 'update'])->name('folders.update');
+        Route::post('/folders/store', [FolderController::class, 'store'])->name('store.folder');
+        Route::post('/upload-folder', [FileController::class, 'storeFolder'])->name('store.upload.folder');
+        Route::delete('/folders/{id}', [FolderController::class, 'destroy'])->name('folders.destroy');
+        Route::get('/folders/{id}', [FolderController::class, 'show'])->name('folders.show');
+        Route::post('/folders', [FolderController::class, 'store'])->name('folders.store');
 
-    Route::get('/upload-file', [FileController::class, 'create'])->name('upload.file');
-    Route::post('/upload-file', [FileController::class, 'store'])->name('store.file');
-    Route::delete('/delete-file/{id}', [FileController::class, 'destroy'])->name('delete.file');
-});
+        Route::get('/upload-file', [FileController::class, 'create'])->name('upload.file');
+        Route::post('/upload-file', [FileController::class, 'store'])->name('store.file');
+        Route::delete('/delete-file/{id}', [FileController::class, 'destroy'])->name('delete.file');
 
+        Route::get('/files', [FileController::class, 'index'])->name('files.index');
+        Route::get('/files/download/{id}', [FileController::class, 'download'])->name('files.download');
+        Route::put('/files/{id}', [FileController::class, 'update'])->name('files.update');
+        Route::delete('/files/{id}', [FileController::class, 'destroy'])->name('files.destroy');
+        // Route::get('/files/{id}', [FileController::class, 'show'])->name('files.show');
+        // Route::get('/files/{id}/preview', [FileController::class, 'preview'])->name('files.preview');
+        Route::post('/files', [FileController::class, 'store'])->name('files.store');
+    });
 });

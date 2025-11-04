@@ -38,7 +38,7 @@
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                   <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editFolderModal{{ $folder->id }}">
-                    ✏️ Edit
+                    ✏️ Rename
                   </button>
                 </li>
                 <li>
@@ -81,6 +81,5 @@
       </div>
     @endforeach
   </div>
-
 </div>
 @endsection

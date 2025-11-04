@@ -3,40 +3,55 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\File;
 use App\Models\Folder;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $query = File::query();
+        $userId = Auth::id(); // ambil ID user yang sedang login
 
-        // Filter pencarian
+        // Query file dengan filter pencarian + user login
+        $query = File::where('uploaded_by', $userId);
+
         if ($request->keyword) {
             $query->where('file_name', 'like', '%' . $request->keyword . '%');
         }
+
         if ($request->type) {
             $query->where('file_type', 'like', '%' . $request->type . '%');
         }
-        if ($request->uploader) {
-            $query->where('uploaded_by', $request->uploader);
-        }
 
         $files = $query->latest()->get();
-        $folders = Folder::latest()->get();
+
+        // Folder hanya yang dibuat oleh user ini
+        $folders = Folder::where('created_by', $userId)
+            ->whereNull('parent_id') // hanya folder induk
+            ->latest()
+            ->get();
+
+        // Uploader list tetap bisa semua user (misal untuk admin)
         $uploaders = User::all();
 
-        // Hitung total file berdasarkan jenis
-        $totalDocuments = File::where(function ($q) {
-            $q->where('file_type', 'like', 'application/%')
-              ->orWhere('file_type', 'like', 'text/%');
-        })->count();
+        // Hitung total berdasarkan ekstensi file milik user ini
+        $documentExtensions = ['pdf','doc','docx','txt','xls','xlsx','ppt','pptx'];
+        $imageExtensions = ['jpg','jpeg','png','gif','webp','bmp'];
+        $videoExtensions = ['mp4','avi','mkv','mov','wmv','flv','webm'];
 
-        $totalImages = File::where('file_type', 'like', 'image/%')->count();
-        $totalVideos = File::where('file_type', 'like', 'video/%')->count();
+        $totalDocuments = File::where('uploaded_by', $userId)
+            ->whereIn('file_type', $documentExtensions)
+            ->count();
+
+        $totalImages = File::where('uploaded_by', $userId)
+            ->whereIn('file_type', $imageExtensions)
+            ->count();
+
+        $totalVideos = File::where('uploaded_by', $userId)
+            ->whereIn('file_type', $videoExtensions)
+            ->count();
 
         return view('dashboard', compact(
             'files',

@@ -8,12 +8,13 @@ use App\Models\Folder;
 
 class FolderController extends Controller
 {
-    // Menampilkan daftar folder milik user login
+    // Menampilkan daftar folder induk milik user login atau global
     public function index(Request $request)
     {
-        $folders = Folder::where(function ($query) {
+        $folders = Folder::whereNull('parent_id') // hanya folder induk
+            ->where(function ($query) {
                 $query->where('created_by', Auth::id())
-                    ->orWhereNull('created_by'); 
+                      ->orWhereNull('created_by'); 
             })
             ->when($request->search, function($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
@@ -29,23 +30,27 @@ class FolderController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'parent_id' => 'nullable|exists:folders,id',
         ]);
 
         Folder::create([
             'name' => $request->name,
-            'parent_id' => $request->parent_id ?? null,
-            'created_by' => Auth::id(),
+            'parent_id' => $request->parent_id,
+            'created_by' => auth()->id(),
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Folder berhasil dibuat.');
+        return back()->with('success', 'Folder created successfully.');
     }
 
     // Menampilkan isi folder
     public function show($id)
     {
-        $folder = Folder::findOrFail($id);
-        $subfolders = Folder::where('parent_id', $id)->get();
-        $files = \App\Models\File::where('folder_id', $id)->get();
+        $folder = Folder::with(['children', 'files'])->findOrFail($id);
+
+        // Ambil subfolder
+        $subfolders = $folder->children()->latest()->get();
+
+        $files = $folder->files()->latest()->get();
 
         return view('folders.show', compact('folder', 'subfolders', 'files'));
     }
@@ -64,12 +69,18 @@ class FolderController extends Controller
             })
             ->firstOrFail();
 
-
         $folder->update([
             'name' => $request->name,
         ]);
 
-        return redirect()->route('folders.index')->with('success', 'Folder berhasil diperbarui.');
+        // Redirect ke parent folder, atau root jika folder induk null
+        if ($folder->parent_id) {
+            return redirect()->route('folders.show', $folder->parent_id)
+                ->with('success', 'Folder berhasil diperbarui.');
+        } else {
+            return redirect()->route('folders.index')
+                ->with('success', 'Folder berhasil diperbarui.');
+        }
     }
 
     // Hapus folder
