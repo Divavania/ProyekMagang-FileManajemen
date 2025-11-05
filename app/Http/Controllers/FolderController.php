@@ -73,14 +73,21 @@ class FolderController extends Controller
             'name' => $request->name,
         ]);
 
-        // Redirect ke parent folder, atau root jika folder induk null
+        // ✅ Jika folder punya parent, arahkan ke folder induknya
         if ($folder->parent_id) {
             return redirect()->route('folders.show', $folder->parent_id)
                 ->with('success', 'Folder berhasil diperbarui.');
-        } else {
-            return redirect()->route('folders.index')
+        }
+
+        // ✅ Jika berasal dari dashboard (cek referer URL), balik ke sana
+        if (str_contains(url()->previous(), route('dashboard'))) {
+            return redirect()->route('dashboard')
                 ->with('success', 'Folder berhasil diperbarui.');
         }
+
+        // ✅ Default: arahkan ke halaman index folder
+        return redirect()->route('folders.index')
+            ->with('success', 'Folder berhasil diperbarui.');
     }
 
     // Hapus folder

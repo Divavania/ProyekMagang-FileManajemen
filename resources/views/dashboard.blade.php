@@ -56,13 +56,13 @@
             </a>
 
             <div class="dropdown">
-              <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation()">
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
-              <ul class="dropdown-menu dropdown-menu-end">
+              <ul class="dropdown-menu dropdown-menu-end" onclick="event.stopPropagation()">
                 <li>
                   <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editFolderModal{{ $folder->id }}">
-                    ✏️ Edit
+                    ✏️ Rename
                   </button>
                 </li>
                 <li>
