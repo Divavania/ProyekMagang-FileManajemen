@@ -40,6 +40,7 @@ class DashboardController extends Controller
         $documentExtensions = ['pdf','doc','docx','txt','xls','xlsx','ppt','pptx'];
         $imageExtensions = ['jpg','jpeg','png','gif','webp','bmp'];
         $videoExtensions = ['mp4','avi','mkv','mov','wmv','flv','webm'];
+        $audioExtensions = ['mp3','wav','ogg','m4a','flac'];
 
         $totalDocuments = File::where('uploaded_by', $userId)
             ->whereIn('file_type', $documentExtensions)
@@ -53,13 +54,18 @@ class DashboardController extends Controller
             ->whereIn('file_type', $videoExtensions)
             ->count();
 
+        $totalAudios = File::where('uploaded_by', $userId)
+            ->whereIn('file_type', $audioExtensions)
+            ->count();
+
         return view('dashboard', compact(
             'files',
             'folders',
             'uploaders',
             'totalDocuments',
             'totalImages',
-            'totalVideos'
+            'totalVideos',
+            'totalAudios'
         ));
     }
 }

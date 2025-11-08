@@ -85,8 +85,28 @@ Route::middleware('auth')->group(function () {
         Route::get('/files/download/{id}', [FileController::class, 'download'])->name('files.download');
         Route::put('/files/{id}', [FileController::class, 'update'])->name('files.update');
         Route::delete('/files/{id}', [FileController::class, 'destroy'])->name('files.destroy');
+
+        // Notification
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
+                
+        // Favorites
+        Route::post('/favorites/file/{id}', [FavoriteController::class, 'toggleFile'])->name('favorites.toggle.file');
+        Route::post('/favorites/folder/{id}', [FavoriteController::class, 'toggleFolder'])->name('favorites.toggle.folder');
+        Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+
+        // Shared
+        Route::get('/shared', [SharedController::class, 'index'])->name('shared.index');
+        Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
+
+        // Trash
+        Route::get('/trash', function () {
+            return view('trash.index'); // nanti kamu bisa ganti view-nya
+        })->name('trash.index');
+        });
+
         // Route::get('/files/{id}', [FileController::class, 'show'])->name('files.show');
         // Route::get('/files/{id}/preview', [FileController::class, 'preview'])->name('files.preview');
         Route::post('/files', [FileController::class, 'store'])->name('files.store');
     });
-});

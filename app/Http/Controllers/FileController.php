@@ -52,6 +52,7 @@ class FileController extends Controller
             'file_type' => strtolower($file->getClientOriginalExtension()),
             'file_size' => $file->getSize(),
             'description' => $request->description,
+            'audio'  => ['mp3','wav','ogg','flac'],
         ]);
 
         return back()->with('success', 'File uploaded successfully.');
