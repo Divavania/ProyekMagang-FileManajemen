@@ -45,6 +45,13 @@
       padding: 2rem;
     }
 
+    .login-content img.logo-main {
+      width: auto;
+      height: 30vh;       
+      margin-bottom: 1.5rem;
+      object-fit: contain;
+    }
+
     .login-content {
       max-width: 350px;
       width: 100%;
@@ -121,7 +128,7 @@
     <!-- Bagian kanan (form login putih) -->
     <div class="login-right">
       <div class="login-content text-center">
-        <img src="{{ asset('images/radar-madiun-logo.png') }}" alt="Radar Madiun" width="120" class="mb-5">
+        <img src="{{ asset('images/radar-madiun-logo.png') }}" alt="Radar Madiun" class="logo-main">
 
         {{-- ALERT pesan login --}}
         @if (session('error'))
