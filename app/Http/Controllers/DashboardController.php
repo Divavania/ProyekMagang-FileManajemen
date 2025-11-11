@@ -15,7 +15,7 @@ class DashboardController extends Controller
         $userId = Auth::id(); // ambil ID user yang sedang login
 
         // Query file dengan filter pencarian + user login
-        $query = File::where('uploaded_by', $userId);
+       $query = File::with('uploader')->where('uploaded_by', $userId);
 
         if ($request->keyword) {
             $query->where('file_name', 'like', '%' . $request->keyword . '%');
@@ -54,6 +54,7 @@ class DashboardController extends Controller
             ->whereIn('file_type', $videoExtensions)
             ->count();
 
+        
         $totalAudios = File::where('uploaded_by', $userId)
             ->whereIn('file_type', $audioExtensions)
             ->count();
@@ -67,5 +68,7 @@ class DashboardController extends Controller
             'totalVideos',
             'totalAudios'
         ));
+        
     }
+
 }

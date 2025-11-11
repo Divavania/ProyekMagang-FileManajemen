@@ -6,6 +6,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FolderController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\SharedController;
+use App\Http\Controllers\LogController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Password;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -89,22 +93,26 @@ Route::middleware('auth')->group(function () {
         // Notification
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::get('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
-                
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+
         // Favorites
+        Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
         Route::post('/favorites/file/{id}', [FavoriteController::class, 'toggleFile'])->name('favorites.toggle.file');
         Route::post('/favorites/folder/{id}', [FavoriteController::class, 'toggleFolder'])->name('favorites.toggle.folder');
-        Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 
         // Shared
         Route::get('/shared', [SharedController::class, 'index'])->name('shared.index');
         Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
 
         // Trash
-        Route::get('/trash', function () {
-            return view('trash.index'); // nanti kamu bisa ganti view-nya
-        })->name('trash.index');
+       Route::get('/trash', [App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
+        Route::post('/trash/restore/{id}', [App\Http\Controllers\TrashController::class, 'restore'])->name('trash.restore');
+        Route::delete('/trash/delete/{id}', [App\Http\Controllers\TrashController::class, 'forceDelete'])->name('trash.forceDelete');
+        Route::post('/trash/restore-all', [App\Http\Controllers\TrashController::class, 'restoreAll'])->name('trash.restoreAll');
+        Route::delete('/trash/empty', [App\Http\Controllers\TrashController::class, 'empty'])->name('trash.empty');
+        Route::delete('/files/bulk-delete', [FileController::class, 'bulkDelete'])->name('files.bulkDelete');
         });
+
 
         // Route::get('/files/{id}', [FileController::class, 'show'])->name('files.show');
         // Route::get('/files/{id}/preview', [FileController::class, 'preview'])->name('files.preview');

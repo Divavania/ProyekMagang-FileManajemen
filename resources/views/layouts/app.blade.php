@@ -4,7 +4,11 @@
 <meta charset="UTF-8">
 <title>@yield('title', 'RadarFiles')</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- CSRF token untuk AJAX -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
+
+<!-- Bootstrap & Icons -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -15,7 +19,7 @@
     margin: 0;
     overflow-x: hidden;
     transition: padding-left 0.3s ease;
-    padding-left: 230px; /* default posisi sidebar */
+    padding-left: 230px;
   }
 
   /* === SIDEBAR === */
@@ -54,7 +58,8 @@
   }
 
   .sidebar a.active,
-  .sidebar a:hover {
+  .sidebar a:hover,
+  .sidebar button.dropdown-toggle:hover {
     background-color: #007bff;
     color: #fff;
   }
@@ -92,7 +97,6 @@
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    text-decoration: none;
     cursor: pointer;
   }
 
@@ -217,7 +221,7 @@
   }
 @endphp
 
-<!-- 🔔 Notification Dropdown -->
+ <!-- 🔔 Notification Dropdown -->
     <div class="dropdown">
       <button class="btn btn-light position-relative rounded-circle" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-bell fs-5"></i>
@@ -255,7 +259,7 @@
       </div>
     </div>
 
-<!-- 👤 Role & Profil -->
+    <!-- 👤 Role & Profil -->
     <span class="text-muted me-2">{{ Auth::user()->role ?? 'User' }}</span>
     @if(Auth::user()->photo && file_exists(public_path('storage/' . Auth::user()->photo)))
       <img src="{{ asset('storage/' . Auth::user()->photo) }}"
@@ -352,5 +356,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
-  

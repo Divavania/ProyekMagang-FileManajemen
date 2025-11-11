@@ -42,4 +42,23 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function favoriteFiles()
+{
+    return $this->belongsToMany(File::class, 'favorites', 'user_id', 'file_id')
+                ->withTimestamps()
+                ->whereNotNull('file_id');
 }
+
+public function favoriteFolders()
+{
+    return $this->belongsToMany(Folder::class, 'favorites', 'user_id', 'folder_id')
+                ->withTimestamps()
+                ->whereNotNull('folder_id');
+}
+
+
+}
+
+
+

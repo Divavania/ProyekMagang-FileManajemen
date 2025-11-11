@@ -1,23 +1,23 @@
 @extends('layouts.app')
-@section('title', 'Dashboard - RadarFiles')
+@section('title', 'Dasbor - RadarFiles')
 
 @section('content')
-<div class="container-fluid mt-3">
+<div class="container-fluid mt-3" style="max-width: 1200px;">
 
   {{-- 🔍 Form Pencarian --}}
   <form class="row g-2 mb-4" method="GET" action="{{ route('dashboard') }}">
-    <div class="col-lg-4 col-md-6 col-sm-8 col-12">
-      <input type="text" name="keyword" class="form-control" placeholder="Search file..." value="{{ request('keyword') }}">
+    <div class="col-md-4 col-sm-6">
+      <input type="text" name="keyword" class="form-control form-control-sm" placeholder="Cari berkas..." value="{{ request('keyword') }}">
     </div>
-    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
-      <select name="type" class="form-select">
+    <div class="col-md-3 col-sm-4">
+      <select name="type" class="form-select form-select-sm">
         <option value="">Semua</option>
         <option value="pdf" {{ request('type')=='pdf'?'selected':'' }}>PDF</option>
-        <option value="image" {{ request('type')=='image'?'selected':'' }}>Image</option>
+        <option value="image" {{ request('type')=='image'?'selected':'' }}>Gambar</option>
       </select>
     </div>
-    <div class="col-lg-2 col-md-2 col-sm-4 col-12">
-      <button class="btn btn-primary w-100">
+    <div class="col-md-2 col-sm-3">
+      <button class="btn btn-primary btn-sm w-100">
         <i class="bi bi-search me-1"></i> Cari
       </button>
     </div>
@@ -34,7 +34,7 @@
       ];
     @endphp
 
-     @foreach($stats as $stat)
+    @foreach($stats as $stat)
     <div class="col-xl-3 col-md-6 col-sm-6 mb-3">
       <div class="card p-3 border-0 shadow-sm h-100 small-card">
         <h6 class="text-muted mb-1">
@@ -49,26 +49,26 @@
   {{-- 📁 Daftar Folder --}}
   <div class="row g-3 mb-5">
     @forelse($folders as $folder)
-      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
-        <div class="card shadow-sm border-0 folder-card p-3 h-100" style="cursor: pointer;" onclick="window.location='{{ route('folders.show', $folder->id) }}'">
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+        <div class="card shadow-sm border-0 folder-card p-3 h-100" style="cursor:pointer;" onclick="window.location='{{ route('folders.show', $folder->id) }}'">
           <div class="d-flex justify-content-between align-items-start">
             <span class="fw-semibold text-dark text-truncate" style="max-width: 120px;">
               <i class="bi bi-folder-fill me-1 text-warning"></i>{{ $folder->name }}
             </span>
             <div class="dropdown">
-              <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation()">
+              <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown">
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
-              <ul class="dropdown-menu dropdown-menu-end" onclick="event.stopPropagation()">
+              <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                   <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editFolderModal{{ $folder->id }}">
                     <i class="bi bi-pencil-square me-1 text-primary"></i>Ubah
                   </button>
                 </li>
                 <li>
-                  <form action="{{ route('folders.destroy', $folder->id) }}" method="POST" onsubmit="return confirm('Yakin hapus folder ini?')">
+                  <form action="{{ route('folders.destroy', $folder->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus folder ini?')">
                     @csrf @method('DELETE')
-                     <button type="submit" class="dropdown-item text-danger">
+                    <button type="submit" class="dropdown-item text-danger">
                       <i class="bi bi-trash me-1"></i>Hapus
                     </button>
                   </form>
@@ -77,25 +77,26 @@
             </div>
           </div>
           <p class="text-muted small mb-0 mt-2">
-             <i class="bi bi-calendar3 me-1"></i> {{ $folder->created_at->format('d M Y') }}
+            <i class="bi bi-calendar3 me-1"></i> {{ $folder->created_at->format('d M Y') }}
+          </p>
         </div>
       </div>
 
       {{-- Modal Edit Folder --}}
       <div class="modal fade" id="editFolderModal{{ $folder->id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-sm">
           <form class="modal-content" method="POST" action="{{ route('folders.update', $folder->id) }}">
             @csrf @method('PUT')
             <div class="modal-header">
-              <h5 class="modal-title">Edit Folder</h5>
+              <h6 class="modal-title"><i class="bi bi-pencil-square me-1"></i>Ubah Folder</h6>
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-             <div class="modal-body">
+            <div class="modal-body">
               <input type="text" name="name" class="form-control form-control-sm" value="{{ $folder->name }}" required>
             </div>
             <div class="modal-footer p-2">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-primary">Save Changes</button>
+              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+              <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
             </div>
           </form>
         </div>
@@ -105,14 +106,14 @@
     @endforelse
   </div>
 
-  {{-- 🗂 Recent Files --}}
+  {{-- 🕒 Berkas Terbaru --}}
   <div class="card border-0 shadow-sm">
-    <div class="card-header bg-white">
-       <h6 class="m-0 fw-semibold"><i class="bi bi-clock-history me-1"></i> Berkas Terbaru</h6>
+    <div class="card-header bg-white py-2 px-3 d-flex align-items-center">
+      <h6 class="m-0 fw-semibold"><i class="bi bi-clock-history me-1"></i> Berkas Terbaru</h6>
     </div>
     <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="table-light">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead class="table-light small">
           <tr>
             <th>Nama Berkas</th>
             <th>Kategori</th>
@@ -124,10 +125,10 @@
           @forelse($files as $file)
           <tr>
             <td class="text-truncate" style="max-width: 160px;">
-             <i class="bi bi-file-earmark me-1 text-secondary"></i>{{ $file->file_name }}
+              <i class="bi bi-file-earmark me-1 text-secondary"></i>{{ $file->file_name }}
             </td>
             <td>{{ ucfirst($file->file_type) }}</td>
-             <td class="d-flex align-items-center">
+            <td class="d-flex align-items-center">
               @if(isset($file->uploader) && $file->uploader->photo && file_exists(public_path('storage/' . $file->uploader->photo)))
                 <img src="{{ asset('storage/' . $file->uploader->photo) }}" class="rounded-circle me-2" style="width:24px;height:24px;object-fit:cover;">
               @else
