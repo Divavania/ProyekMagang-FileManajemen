@@ -29,10 +29,29 @@
     <button class="btn btn-sm btn-light p-1 rounded-circle" type="button" data-bs-toggle="dropdown">
       <i class="bi bi-three-dots-vertical"></i>
     </button>
+
     <ul class="dropdown-menu dropdown-menu-end">
-      <li><a class="dropdown-item" href="{{ route('files.download', $file->id) }}"><i class="bi bi-download me-2"></i>Unduh</a></li>
-      <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editFileModal{{ $file->id }}"><i class="bi bi-pencil me-2"></i>Ubah Nama</button></li>
-      <li><button class="dropdown-item text-danger btn-delete" data-id="{{ $file->id }}"><i class="bi bi-trash me-2"></i>Hapus</button></li>
+      <li>
+        <a class="dropdown-item" href="{{ route('files.download', $file->id) }}">
+          <i class="bi bi-download me-2"></i>Unduh
+        </a>
+      </li>
+
+      {{-- FIX: tambahkan type="button" --}}
+      <li>
+        <button type="button" class="dropdown-item"
+                data-bs-toggle="modal"
+                data-bs-target="#editFileModal{{ $file->id }}">
+          <i class="bi bi-pencil me-2"></i>Ubah Nama
+        </button>
+      </li>
+
+      <li>
+        <button type="button" class="dropdown-item text-danger btn-delete"
+                data-id="{{ $file->id }}">
+          <i class="bi bi-trash me-2"></i>Hapus
+        </button>
+      </li>
     </ul>
   </div>
 </div>
