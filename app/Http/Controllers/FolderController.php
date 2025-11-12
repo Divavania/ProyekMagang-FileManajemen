@@ -14,7 +14,7 @@ class FolderController extends Controller
         $folders = Folder::whereNull('parent_id') // hanya folder induk
             ->where(function ($query) {
                 $query->where('created_by', Auth::id())
-                      ->orWhereNull('created_by'); 
+                    ->orWhereNull('created_by'); 
             })
             ->when($request->search, function($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
@@ -22,7 +22,9 @@ class FolderController extends Controller
             ->latest()
             ->get();
 
-        return view('folders.index', compact('folders'));
+        $allFolders = Folder::all(); // <-- Tambahkan ini
+
+        return view('folders.index', compact('folders', 'allFolders')); // <-- kirim ke view
     }
 
     // Simpan folder baru
@@ -49,10 +51,27 @@ class FolderController extends Controller
 
         // Ambil subfolder
         $subfolders = $folder->children()->latest()->get();
-
         $files = $folder->files()->latest()->get();
 
-        return view('folders.show', compact('folder', 'subfolders', 'files'));
+        $allFolders = Folder::all(); // <-- Tambahkan ini juga
+
+        return view('folders.show', compact('folder', 'subfolders', 'files', 'allFolders'));
+    }
+
+    // Tambahkan method helper untuk dashboard
+    public function dashboardFolders()
+    {
+        $folders = Folder::whereNull('parent_id')
+            ->where(function($query){
+                $query->where('created_by', Auth::id())
+                      ->orWhereNull('created_by');
+            })
+            ->latest()
+            ->get();
+
+        $allFolders = Folder::all(); // Supaya dropdown Move bisa muncul
+
+        return view('dashboard', compact('folders', 'allFolders'));
     }
 
     // Update folder
@@ -90,15 +109,102 @@ class FolderController extends Controller
             ->with('success', 'Folder berhasil diperbarui.');
     }
 
-    // Hapus folder
     public function destroy($id)
     {
         $folder = Folder::where('id', $id)
             ->where('created_by', Auth::id())
+            ->with(['children', 'files']) // ambil relasi supaya bisa dihapus semua
             ->firstOrFail();
 
-        $folder->delete();
+        // 🔁 Fungsi rekursif untuk hapus subfolder dan file di dalamnya
+        $this->deleteFolderRecursive($folder);
 
-        return back()->with('success', 'Folder berhasil dihapus.');
+        return back()->with('success', 'Folder dan seluruh isinya berhasil dihapus.');
+    }
+
+    private function deleteFolderRecursive($folder)
+    {
+        // 1️⃣ Hapus semua file di folder ini
+        foreach ($folder->files as $file) {
+            // hapus dari storage
+            if (\Illuminate\Support\Facades\Storage::exists($file->file_path)) {
+                \Illuminate\Support\Facades\Storage::delete($file->file_path);
+            }
+            // hapus dari database
+            $file->delete();
+        }
+
+        // 2️⃣ Hapus semua subfolder dan isinya
+        foreach ($folder->children as $childFolder) {
+            $this->deleteFolderRecursive($childFolder);
+        }
+
+        // 3️⃣ Hapus folder itu sendiri
+        $folder->delete();
+    }
+
+    public function uploadFolderAjax(Request $request)
+    {
+        $request->validate([
+            'folders' => 'required|array',
+            'folders.*.name' => 'required|string',
+            'folders.*.path' => 'nullable|string',
+            'folders.*.files' => 'nullable|array',
+            'folders.*.files.*' => 'file',
+        ]);
+
+        $userId = auth()->id();
+
+        foreach ($request->folders as $folderData) {
+            // Buat folder di DB
+            $parentId = null;
+            $pathParts = explode('/', $folderData['path'] ?? '');
+
+            foreach ($pathParts as $part) {
+                if (!$part) continue;
+
+                $folder = Folder::firstOrCreate([
+                    'name' => $part,
+                    'parent_id' => $parentId,
+                    'created_by' => $userId,
+                ]);
+                $parentId = $folder->id;
+            }
+
+            // Folder terakhir di path
+            $currentFolderId = $parentId;
+
+            // Simpan file jika ada
+            if (!empty($folderData['files'])) {
+                foreach ($folderData['files'] as $file) {
+                    $filePath = $file->storeAs('uploads', $file->getClientOriginalName(), 'public');
+
+                    \App\Models\File::create([
+                        'file_name' => $file->getClientOriginalName(),
+                        'file_type' => $file->extension(),
+                        'file_path' => $filePath,
+                        'folder_id' => $currentFolderId,
+                        'uploaded_by' => $userId,
+                    ]);
+                }
+            }
+        }
+
+        return response()->json(['success' => true, 'message' => 'Folders uploaded successfully!']);
+    }
+
+    public function move(Request $request)
+    {
+        $folder = Folder::findOrFail($request->folder_id);
+
+        // Jangan bisa dipindahkan ke dirinya sendiri
+        if($request->parent_id == $folder->id){
+            return redirect()->back()->with('error', 'Folder tidak bisa dipindah ke dirinya sendiri.');
+        }
+
+        $folder->parent_id = $request->parent_id ?: null; // null = root
+        $folder->save();
+
+        return redirect()->back()->with('success', 'Folder berhasil dipindah.');
     }
 }

@@ -81,6 +81,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/folders/{id}', [FolderController::class, 'show'])->name('folders.show');
         Route::post('/folders', [FolderController::class, 'store'])->name('folders.store');
 
+        // API endpoint untuk upload folder
+        Route::post('/folders/upload', [App\Http\Controllers\FolderController::class, 'uploadFolderAjax'])->name('folders.upload.ajax');
+        Route::post('/folders/move', [FolderController::class, 'move'])->name('folders.move');
+
         Route::get('/upload-file', [FileController::class, 'create'])->name('upload.file');
         Route::post('/upload-file', [FileController::class, 'store'])->name('store.file');
         Route::delete('/delete-file/{id}', [FileController::class, 'destroy'])->name('delete.file');

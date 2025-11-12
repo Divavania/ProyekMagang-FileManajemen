@@ -48,62 +48,7 @@
 
   {{-- 📁 Daftar Folder --}}
   <div class="row g-3 mb-5">
-    @forelse($folders as $folder)
-      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-        <div class="card shadow-sm border-0 folder-card p-3 h-100" style="cursor:pointer;" onclick="window.location='{{ route('folders.show', $folder->id) }}'">
-          <div class="d-flex justify-content-between align-items-start">
-            <span class="fw-semibold text-dark text-truncate" style="max-width: 120px;">
-              <i class="bi bi-folder-fill me-1 text-warning"></i>{{ $folder->name }}
-            </span>
-            <div class="dropdown">
-              <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown">
-                <i class="bi bi-three-dots-vertical"></i>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                  <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editFolderModal{{ $folder->id }}">
-                    <i class="bi bi-pencil-square me-1 text-primary"></i>Ubah
-                  </button>
-                </li>
-                <li>
-                  <form action="{{ route('folders.destroy', $folder->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus folder ini?')">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="dropdown-item text-danger">
-                      <i class="bi bi-trash me-1"></i>Hapus
-                    </button>
-                  </form>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <p class="text-muted small mb-0 mt-2">
-            <i class="bi bi-calendar3 me-1"></i> {{ $folder->created_at->format('d M Y') }}
-          </p>
-        </div>
-      </div>
-
-      {{-- Modal Edit Folder --}}
-      <div class="modal fade" id="editFolderModal{{ $folder->id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
-          <form class="modal-content" method="POST" action="{{ route('folders.update', $folder->id) }}">
-            @csrf @method('PUT')
-            <div class="modal-header">
-              <h6 class="modal-title"><i class="bi bi-pencil-square me-1"></i>Ubah Folder</h6>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-              <input type="text" name="name" class="form-control form-control-sm" value="{{ $folder->name }}" required>
-            </div>
-            <div class="modal-footer p-2">
-              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
-              <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    @empty
-      <p class="text-muted text-center">Belum ada folder.</p>
-    @endforelse
+    @include('folders._folder_cards', ['folders' => $folders])
   </div>
 
   {{-- 🕒 Berkas Terbaru --}}
@@ -150,11 +95,4 @@
     </div>
   </div>
 </div>
-
-{{--  CSS  --}}
-<style>
-  .small-card { font-size: 0.9rem; }
-  .folder-card:hover { transform: scale(1.02); transition: 0.2s; }
-  .table td, .table th { vertical-align: middle !important; }
-</style>
 @endsection
