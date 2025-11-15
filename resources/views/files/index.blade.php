@@ -195,11 +195,10 @@ deleteSelectedBtn.addEventListener('click', (e) => {
   });
 
   // === Toggle Favorite ===
-  document.querySelectorAll('.toggle-favorite').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.preventDefault();
+  document.querySelectorAll('.toggle-favorite-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
       const fileId = btn.dataset.id;
-      const icon = btn.querySelector('i');
+
       try {
         const res = await fetch(`/favorites/file/${fileId}`, {
           method: 'POST',
@@ -208,21 +207,33 @@ deleteSelectedBtn.addEventListener('click', (e) => {
             'Accept': 'application/json'
           }
         });
+
         const data = await res.json();
+
         if (data.status === 'ok') {
+          // Update icon di dropdown
+          const icon = btn.querySelector('i');
+
           if (data.favorited) {
             icon.classList.remove('bi-star', 'text-secondary');
             icon.classList.add('bi-star-fill', 'text-warning');
+            btn.innerHTML = `<i class="bi bi-star-fill text-warning me-2"></i>Hapus dari Favorit`;
           } else {
             icon.classList.remove('bi-star-fill', 'text-warning');
             icon.classList.add('bi-star', 'text-secondary');
+            btn.innerHTML = `<i class="bi bi-star me-2"></i>Tambah ke Favorit`;
+
+            // Jika sedang di halaman favorit → hapus kartu dari tampilan
+            const isFavoritesPage = window.location.pathname.includes('/favorites');
+            if (isFavoritesPage) {
+              const card = btn.closest('.file-item') || btn.closest('.d-flex');
+              if (card) card.remove();
+            }
           }
-        } else {
-          Swal.fire('Gagal', 'Tidak dapat mengubah status favorit.', 'error');
         }
       } catch (err) {
         console.error(err);
-        Swal.fire('Error', 'Terjadi kesalahan koneksi ke server.', 'error');
+        Swal.fire('Error', 'Gagal terhubung ke server.', 'error');
       }
     });
   });

@@ -10,19 +10,6 @@
     <div class="position-absolute top-0 start-0 m-2">
       <input type="checkbox" class="form-check-input select-checkbox d-none" name="selected[]" value="{{ $file->id }}">
     </div>
-  {{-- Tombol Favorite di kiri atas, menu di kanan atas --}}
-<div class="position-absolute top-0 start-0 m-2">
-  <button type="button"
-          class="btn btn-sm p-0 bg-transparent border-0 toggle-favorite"
-          data-id="{{ $file->id }}"
-          title="Favoritkan">
-    @if(method_exists($file, 'isFavoritedBy') && $file->isFavoritedBy(auth()->id()))
-      <i class="bi bi-star-fill text-warning fs-5"></i>
-    @else
-      <i class="bi bi-star text-secondary fs-5"></i>
-    @endif
-  </button>
-</div>
 
 <div class="position-absolute top-0 end-0 m-2">
   <div class="dropdown">
@@ -43,6 +30,26 @@
                 data-bs-toggle="modal"
                 data-bs-target="#editFileModal{{ $file->id }}">
           <i class="bi bi-pencil me-2"></i>Ubah Nama
+        </button>
+      </li>
+
+      <li>
+        <button type="button" class="dropdown-item"
+                data-bs-toggle="modal"
+                data-bs-target="#shareFileModal{{ $file->id }}">
+          <i class="bi bi-share me-2"></i>Berbagi
+        </button>
+      </li>
+
+      <li>
+        <button type="button"
+                class="dropdown-item toggle-favorite-btn"
+                data-id="{{ $file->id }}">
+          @if($file->isFavoritedBy(auth()->id()))
+            <i class="bi bi-star-fill text-warning me-2"></i>Hapus dari Favorit
+          @else
+            <i class="bi bi-star me-2"></i>Tambah ke Favorit
+          @endif
         </button>
       </li>
 

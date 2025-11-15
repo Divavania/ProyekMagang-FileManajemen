@@ -123,9 +123,24 @@ class FileController extends Controller
             'file_name' => 'required|string|max:255',
         ]);
 
-        $file = File::where('id', $id)->where('uploaded_by', Auth::id())->firstOrFail();
-        $file->file_name = $request->file_name;
-        $file->save();
+        $file = File::where('id', $id)
+            ->where('uploaded_by', Auth::id())
+            ->firstOrFail();
+
+        $extension = pathinfo($file->file_name, PATHINFO_EXTENSION);
+        $newName = $request->file_name . '.' . $extension;
+
+        $oldPath = $file->file_path;
+        $newPath = dirname($oldPath) . '/' . $newName;
+
+        if (Storage::disk('public')->exists($oldPath)) {
+            Storage::disk('public')->move($oldPath, $newPath);
+        }
+
+        $file->update([
+            'file_name' => $newName,
+            'file_path' => $newPath,
+        ]);
 
         return redirect()->back()->with('success', 'Nama file berhasil diperbarui.');
     }

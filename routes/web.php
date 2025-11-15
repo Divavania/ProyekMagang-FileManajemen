@@ -97,7 +97,8 @@ Route::middleware('auth')->group(function () {
         // Notification
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::get('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
+        Route::post('/notifications/delete-selected', [NotificationController::class, 'deleteSelected'])->name('notifications.deleteSelected');
 
         // Favorites
         Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
@@ -106,6 +107,7 @@ Route::middleware('auth')->group(function () {
 
         // Shared
         Route::get('/shared', [SharedController::class, 'index'])->name('shared.index');
+        Route::post('/files/share/{id}', [SharedController::class, 'store'])->name('files.share');
         Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
 
         // Trash

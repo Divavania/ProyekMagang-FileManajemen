@@ -82,43 +82,42 @@
 --}}
 
   {{-- Share Modal --}}
-  <div class="modal fade" id="shareModal{{ $file->id }}" tabindex="-1" aria-labelledby="shareModalLabel{{ $file->id }}" aria-hidden="true">
+  <div class="modal fade" id="shareFileModal{{ $file->id }}" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content rounded-3">
-        <div class="modal-header">
-          <h5 class="modal-title">Bagikan File: {{ $file->file_name }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Tipe Bagikan</label>
-            <select id="shareType{{ $file->id }}" class="form-select share-type" data-target="#shareUserList{{ $file->id }}">
-              <option value="public" {{ $file->share_type == 'public' ? 'selected' : '' }}>Publik</option>
-              <option value="selective" {{ $file->share_type == 'selective' ? 'selected' : '' }}>Spesifik Pengguna</option>
-            </select>
-          </div>
+        <form class="modal-content" method="POST" action="{{ route('files.share', $file->id) }}">
+            @csrf
+            <div class="modal-header">
+                <h5 class="modal-title">Bagikan File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
-          <div class="mb-3" id="shareUserList{{ $file->id }}" style="display: {{ $file->share_type == 'selective' ? 'block' : 'none' }};">
-            <label class="form-label">Pilih Pengguna</label>
-            <select class="form-select" multiple>
-              @foreach($users as $user)
-                <option value="{{ $user->id }}" {{ $file->shared_with && in_array($user->id, json_decode($file->shared_with)) ? 'selected' : '' }}>
-                  {{ $user->name }}
-                </option>
-              @endforeach
-            </select>
-          </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label>Email Pengguna</label>
+                    <input type="text" name="email" class="form-control"
+                        placeholder="Masukkan satu atau lebih email, pisahkan dengan koma ( , )" required>
+                </div>
 
-          <div class="mb-3">
-            <label class="form-label">Link Share</label>
-            <input type="text" class="form-control" value="{{ $fileUrl }}" readonly onclick="this.select()">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-          <button type="button" class="btn btn-primary" onclick="copyLink('{{ $fileUrl }}')">Salin & Bagikan</button>
-        </div>
-      </div>
+                <div class="mb-3">
+                    <label>Izin Akses</label>
+                    <select name="permission" class="form-select" required>
+                        <option value="view">Lihat</option>
+                        <option value="edit">Edit</option>
+                        <option value="download">Unduh</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Pesan (opsional)</label>
+                    <textarea name="message" class="form-control" rows="3" placeholder="Tambahkan pesan..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Bagikan</button>
+            </div>
+        </form>
     </div>
   </div>
 

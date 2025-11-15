@@ -69,16 +69,23 @@
       </li>
 
       <li>
-        <form action="/favorites/file/{{ $file->id }}" method="POST">
-          @csrf
-          <button type="submit" class="dropdown-item">
-            @if($file->isFavoritedBy(auth()->id()))
-              <i class="bi bi-star-fill text-warning me-2"></i>Hapus dari Favorit
-            @else
-              <i class="bi bi-star me-2"></i>Tambah ke Favorit
-            @endif
-          </button>
-        </form>
+        <button type="button" class="dropdown-item"
+                data-bs-toggle="modal"
+                data-bs-target="#shareFileModal{{ $file->id }}">
+          <i class="bi bi-share me-2"></i>Berbagi
+        </button>
+      </li>
+
+      <li>
+        <button type="button"
+                class="dropdown-item toggle-favorite-btn"
+                data-id="{{ $file->id }}">
+          @if($file->isFavoritedBy(auth()->id()))
+            <i class="bi bi-star-fill text-warning me-2"></i>Hapus dari Favorit
+          @else
+            <i class="bi bi-star me-2"></i>Tambah ke Favorit
+          @endif
+        </button>
       </li>
 
       <li><hr class="dropdown-divider"></li>

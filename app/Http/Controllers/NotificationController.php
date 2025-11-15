@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
@@ -8,22 +9,39 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        $notifications = auth()->user()->notifications()->latest()->get();
+        $user = Auth::user();
+        $notifications = $user->notifications()->latest()->paginate(10);
+
         return view('notifications.index', compact('notifications'));
     }
 
-    public function markAsRead($id)
+    // ✅ Tandai satu notifikasi sudah dibaca
+    public function markAsRead($id) 
     {
-        $notification = auth()->user()->notifications()->findOrFail($id);
-        if ($notification && is_null($notification->read_at)) {
-            $notification->markAsRead();
-        }
-        return redirect()->back();
+    $notif = auth()->user()->notifications()->findOrFail($id);
+    $notif->markAsRead();
+   
+    return back(); 
     }
 
-    public function markAllAsRead()
+    // ✅ Tandai semua notifikasi sudah dibaca
+    public function markAllRead()
     {
-        auth()->user()->unreadNotifications->markAsRead();
-        return redirect()->back()->with('success', 'Semua notifikasi telah dibaca.');
+        $user = Auth::user();
+        $user->unreadNotifications->markAllRead();
+
+        return redirect()->back()->with('success', 'All notifications marked as read.');
     }
+
+    public function deleteSelected(Request $request)
+    {
+        $ids = explode(',', $request->selected_ids);
+
+        if (!empty($ids)) {
+            Auth::user()->notifications()->whereIn('id', $ids)->delete();
+            return back()->with('success', 'Notifikasi terpilih berhasil dihapus.');
+        }
+
+        return back()->with('error', 'Tidak ada notifikasi yang dipilih.');
+    }   
 }

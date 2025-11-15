@@ -222,42 +222,51 @@
 @endphp
 
  <!-- 🔔 Notification Dropdown -->
-    <div class="dropdown">
-      <button class="btn btn-light position-relative rounded-circle" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-bell fs-5"></i>
-        @if($unreadCount > 0)
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ $unreadCount }}</span>
-        @endif
-      </button>
+  <div class="dropdown">
+    <button class="btn btn-light position-relative rounded-circle" type="button" id="notificationDropdown"
+            data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-bell fs-5"></i>
+      @if($unreadCount > 0)
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          {{ $unreadCount }}
+        </span>
+      @endif
+    </button>
 
-      <div class="dropdown-menu dropdown-menu-end shadow border-0 p-0 rounded-3 animate-fade" aria-labelledby="notificationDropdown" style="min-width: 340px;">
-        <div class="p-3 border-bottom bg-light fw-semibold">Notifikasi</div>
+    <div class="dropdown-menu dropdown-menu-end shadow border-0 p-0 rounded-3 animate-fade"
+        aria-labelledby="notificationDropdown" style="min-width: 340px;">
+      <div class="p-3 border-bottom bg-light fw-semibold">Notifikasi</div>
 
-        <div class="list-group list-group-flush">
-          @forelse($latestNotifs as $notification)
-            <a href="{{ $notification->link ?? '#' }}" class="list-group-item list-group-item-action notification-item d-flex justify-content-between align-items-start" data-id="{{ $notification->id }}">
-              <div>
-              <div class="fw-semibold">{{ Str::limit($notification->data['title'] ?? 'Notifikasi', 50) }}</div>
-              <small class="text-muted">{{ Str::limit($notification->data['message'] ?? '', 80) }}</small>
-
-                <div class="text-muted small">{{ $notification->created_at->diffForHumans() }}</div>
+      {{-- Scroll area untuk daftar notifikasi --}}
+      <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+        @forelse($latestNotifs as $notification)
+          <a href="{{ route('notifications.read', $notification->id) }}" 
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+            <div>
+              <div class="fw-semibold">
+                {{ Str::limit($notification->data['title'] ?? 'Notifikasi', 50) }}
               </div>
-              <div class="ms-2">
-                @if(!$notification->is_read)
-                  <span class="badge bg-primary rounded-circle p-2"></span>
-                @endif
-              </div>
-            </a>
-          @empty
-            <div class="p-3 text-center text-muted">Belum ada notifikasi</div>
-          @endforelse
-        </div>
+              <small class="text-muted d-block">
+                {{ Str::limit($notification->data['message'] ?? '', 80) }}
+              </small>
+              <div class="text-muted small">{{ $notification->created_at->diffForHumans() }}</div>
+            </div>
+            @if(is_null($notification->read_at))
+              <span class="badge bg-primary rounded-circle p-2 ms-2"></span>
+            @endif
+          </a>
+        @empty
+          <div class="p-3 text-center text-muted">Belum ada notifikasi</div>
+        @endforelse
+      </div>
 
-          <div class="border-top">
-          <a href="{{ route('notifications.index') }}" class="dropdown-item text-center text-primary py-2">Lihat Semua</a>
-        </div>
+      <div class="border-top">
+        <a href="{{ route('notifications.index') }}" class="dropdown-item text-center text-primary py-2">
+          Lihat Semua
+        </a>
       </div>
     </div>
+  </div>
 
     <!-- 👤 Role & Profil -->
     <span class="text-muted me-2">{{ Auth::user()->role ?? 'User' }}</span>
