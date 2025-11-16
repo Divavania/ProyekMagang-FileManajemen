@@ -110,6 +110,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/files/share/{id}', [SharedController::class, 'store'])->name('files.share');
         Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
 
+         //Move
+        Route::put('/files/{id}/move', [FileController::class, 'move'])->name('files.move');
+
         // Trash
        Route::get('/trash', [App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
         Route::post('/trash/restore/{id}', [App\Http\Controllers\TrashController::class, 'restore'])->name('trash.restore');

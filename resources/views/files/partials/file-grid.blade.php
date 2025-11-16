@@ -34,6 +34,14 @@
       </li>
 
       <li>
+      <button type="button" class="dropdown-item"
+              data-bs-toggle="modal"
+              data-bs-target="#moveFileModal{{ $file->id }}">
+        <i class="bi bi-folder-symlink me-2"></i>Pindahkan
+      </button>
+    </li>
+
+      <li>
         <button type="button" class="dropdown-item"
                 data-bs-toggle="modal"
                 data-bs-target="#shareFileModal{{ $file->id }}">

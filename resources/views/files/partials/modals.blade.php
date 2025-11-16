@@ -146,9 +146,13 @@
   </div>
 
   {{-- Move File Modal --}}
-  <div class="modal fade" id="moveFileModal{{ $file->id }}" tabindex="-1" aria-labelledby="moveFileModalLabel{{ $file->id }}" aria-hidden="true">
+<div class="modal fade" id="moveFileModal{{ $file->id }}" tabindex="-1" aria-labelledby="moveFileModalLabel{{ $file->id }}" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <form class="modal-content rounded-3 move-file-form" data-file-id="{{ $file->id }}">
+      <form class="modal-content rounded-3"
+      method="POST"
+      action="{{ route('files.move', $file->id) }}">
+  @csrf
+  @method('PUT')
         @csrf
         <div class="modal-header">
           <h5 class="modal-title">Pindahkan File: {{ $file->file_name }}</h5>

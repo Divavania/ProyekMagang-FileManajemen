@@ -171,22 +171,18 @@ class FileController extends Controller
     }
 
     // Pindahkan file (AJAX/fetch)
-    public function move(Request $request)
-    {
-        $request->validate([
-            'file_id' => 'required|exists:files,id',
-            'folder_id' => 'required|exists:folders,id',
-        ]);
+   public function move(Request $request, $id)
+{
+    $request->validate([
+        'folder_id' => 'required|exists:folders,id'
+    ]);
 
-        $file = File::findOrFail($request->file_id);
-        $file->folder_id = $request->folder_id;
-        $file->save();
+    $file = File::findOrFail($id);
+    $file->folder_id = $request->folder_id;
+    $file->save();
 
-        return response()->json([
-            'status' => 'ok',
-            'message' => 'File berhasil dipindahkan ke folder baru.'
-        ]);
-    }
+    return redirect()->back()->with('success', 'File berhasil dipindahkan!');
+}
 
     public function shareLink($id)
 {
