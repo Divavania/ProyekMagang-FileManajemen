@@ -57,15 +57,26 @@
     font-size: 1.2rem;
   }
 
-  .sidebar a.active,
+  .sidebar.active {
+  transform: translateX(0);
+  }
+
   .sidebar a:hover,
   .sidebar button.dropdown-toggle:hover {
     background-color: #007bff;
     color: #fff;
   }
 
-  .sidebar.closed {
-    left: -230px;
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 1500;
+    display: none;
+  }
+
+  .sidebar.active + .sidebar-overlay {
+  display: block;
   }
 
   /* === MAIN CONTENT === */
@@ -297,22 +308,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggle = document.getElementById('sidebarToggle');
   const overlay = document.getElementById('sidebarOverlay');
 
-  toggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (window.innerWidth > 992) {
-      sidebar.classList.toggle('closed');
-      document.body.style.paddingLeft = sidebar.classList.contains('closed') ? '0' : '230px';
-    } else {
+ if (toggle && sidebar) {
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
       sidebar.classList.toggle('active');
-      overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
-    }
-  });
+      overlay && (overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none');
+    });
+  }
 
-  overlay.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-    overlay.style.display = 'none';
-  });
-});
+  if (overlay && sidebar) {
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.style.display = 'none';
+    });
+  };
 
 // Notifikasi: klik item -> tandai dibaca via AJAX
   const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
