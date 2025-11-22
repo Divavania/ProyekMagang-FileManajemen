@@ -193,10 +193,15 @@
     <i class="bi bi-trash"></i> Sampah
   </a>
 
-  @if(Auth::user() && Auth::user()->role === 'superadmin')
-  <a href="{{ route('activity-log.index') }}" class="{{ request()->is('activity-log*') ? 'active' : '' }}">
-    <i class="bi bi-clipboard-data"></i> Log Aktivitas
-  </a>
+  {{-- Menu tambah user & log aktivitas untuk admin & superadmin --}}
+  @if(Auth::check() && in_array(Auth::user()->role, ['admin', 'superadmin']))
+    <a href="{{ route('users.index') }}" class="{{ request()->is('users*') ? 'active' : '' }}">
+      <i class="bi bi-person-plus"></i> Tambah User
+    </a>
+
+    <a href="#" class="{{ request()->is('activity-log*') ? 'active' : '' }}">
+      <i class="bi bi-clipboard-data"></i> Log Aktivitas
+    </a>
   @endif
 
   <form action="{{ route('logout') }}" method="POST" class="mt-3">

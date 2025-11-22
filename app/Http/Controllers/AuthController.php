@@ -29,6 +29,11 @@ class AuthController extends Controller
             return back()->with('error', 'Email tidak ditemukan!');
         }
 
+        // Cek status user
+        if ($user->status !== 'aktif') {
+            return back()->with('error', 'Akun Anda nonaktif. Hubungi admin.');
+        }
+
         // Cek apakah password cocok
         if (!Hash::check($request->password, $user->password)) {
             return back()->with('error', 'Password salah!');

@@ -10,6 +10,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\SharedController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Password;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -126,4 +127,13 @@ Route::middleware('auth')->group(function () {
         // Route::get('/files/{id}', [FileController::class, 'show'])->name('files.show');
         // Route::get('/files/{id}/preview', [FileController::class, 'preview'])->name('files.preview');
         Route::post('/files', [FileController::class, 'store'])->name('files.store');
+
+        // 🟦 User Management (hanya admin/superadmin)
+        Route::middleware(['auth'])->group(function () {
+            Route::get('/users', [UserController::class, 'index'])->name('users.index');
+            Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+            Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
+            Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+            Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+        });
     });
