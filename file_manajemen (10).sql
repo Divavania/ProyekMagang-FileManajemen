@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 15, 2025 at 11:45 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Waktu pembuatan: 23 Nov 2025 pada 00.42
+-- Versi server: 10.4.32-MariaDB
+-- Versi PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `manajemenfile`
+-- Database: `file_manajemen`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `favorites`
+-- Struktur dari tabel `favorites`
 --
 
 CREATE TABLE `favorites` (
@@ -37,7 +37,7 @@ CREATE TABLE `favorites` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `favorites`
+-- Dumping data untuk tabel `favorites`
 --
 
 INSERT INTO `favorites` (`id`, `user_id`, `file_id`, `folder_id`, `created_at`, `updated_at`) VALUES
@@ -52,7 +52,7 @@ INSERT INTO `favorites` (`id`, `user_id`, `file_id`, `folder_id`, `created_at`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `files`
+-- Struktur dari tabel `files`
 --
 
 CREATE TABLE `files` (
@@ -73,7 +73,7 @@ CREATE TABLE `files` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `files`
+-- Dumping data untuk tabel `files`
 --
 
 INSERT INTO `files` (`id`, `folder_id`, `uploaded_by`, `divisi`, `file_name`, `file_path`, `file_type`, `file_size`, `mime_type`, `status`, `description`, `created_at`, `updated_at`, `deleted_at`) VALUES
@@ -81,15 +81,22 @@ INSERT INTO `files` (`id`, `folder_id`, `uploaded_by`, `divisi`, `file_name`, `f
 (99, NULL, 6, NULL, 'WhatsApp Image 2025-11-12 at 10.57.53.jpeg', 'uploads/files/Z3AI9ONLt1vOQtntiu9o8ExcCgTXAJwrx6GeXJJz.jpg', 'jpeg', 195639, NULL, 'Private', NULL, '2025-11-12 05:00:25', '2025-11-12 05:02:14', '2025-11-12 05:02:14'),
 (100, 45, 6, NULL, 'Hasil edit foto santai tepi danau.png', 'uploads/Hasil edit foto santai tepi danau.png', 'png', NULL, NULL, 'Private', NULL, '2025-11-12 05:15:11', '2025-11-12 05:35:31', '2025-11-12 05:35:31'),
 (101, 46, 6, NULL, 'Screen Recording 2025-11-09 174325.mp4', 'uploads/Screen Recording 2025-11-09 174325.mp4', 'mp4', NULL, NULL, 'Private', NULL, '2025-11-12 05:34:15', '2025-11-12 05:34:15', NULL),
-(102, 47, 6, NULL, 'night street.png', 'uploads/Hasil edit foto night street style.png', 'png', NULL, NULL, 'Private', NULL, '2025-11-12 05:34:15', '2025-11-14 22:10:22', NULL),
+(102, 47, 6, NULL, 'night street.png', 'uploads/Hasil edit foto night street style.png', 'png', NULL, NULL, 'Private', NULL, '2025-11-12 05:34:15', '2025-11-22 09:58:44', '2025-11-22 09:58:44'),
 (103, 45, 6, NULL, 'bangtan', 'uploads/files/gnYYt2UHGCpoxOXEST4JiK0ablLbE1cS6qd5yeng.jpg', 'jpg', 74981, NULL, 'Private', NULL, '2025-11-14 22:10:57', '2025-11-14 22:19:25', '2025-11-14 22:19:25'),
 (104, 45, 6, NULL, 'bangtan.jpg', 'uploads/files/bangtan.jpg', 'jpg', 74981, NULL, 'Private', NULL, '2025-11-14 22:20:30', '2025-11-14 22:43:39', '2025-11-14 22:43:39'),
-(105, 45, 6, NULL, 'bangtan.jpg', 'uploads/files/bangtan.jpg', 'jpg', 74981, NULL, 'Private', NULL, '2025-11-14 22:45:05', '2025-11-15 03:04:29', NULL);
+(105, 45, 6, NULL, 'bangtan.jpg', 'uploads/files/bangtan.jpg', 'jpg', 74981, NULL, 'Private', NULL, '2025-11-14 22:45:05', '2025-11-22 09:58:44', '2025-11-22 09:58:44'),
+(106, NULL, 6, NULL, 'Hasil edit foto kasual jadi estetik dan realistis.png', 'uploads/Hasil edit foto kasual jadi estetik dan realistis.png', 'png', NULL, NULL, 'Private', NULL, '2025-11-15 20:46:19', '2025-11-17 07:08:52', '2025-11-17 07:08:52'),
+(107, NULL, 6, NULL, 'Hasil edit foto kasual jadi estetik dan realistis.png', 'uploads/Hasil edit foto kasual jadi estetik dan realistis.png', 'png', NULL, NULL, 'Private', NULL, '2025-11-15 20:46:19', '2025-11-17 07:08:52', '2025-11-17 07:08:52'),
+(108, NULL, 6, NULL, 'Screen Recording 2025-11-09 174325.mp4', 'uploads/files/oT9PGFGflboCbWiIKLlBA9nGKzEJ8C8FdttdJVFK.mp4', 'mp4', 2047113, NULL, 'Private', NULL, '2025-11-16 03:20:17', '2025-11-17 07:09:05', '2025-11-17 07:09:05'),
+(109, NULL, 6, NULL, 'dreamina-2025-11-17-2219-Do not change her face. A young woman st....png', 'uploads/files/myZ3t443pgJlWhxD2zjOIYpjHbQGB1x0cmRWwtbX.png', 'png', 4382841, NULL, 'Private', NULL, '2025-11-17 07:09:30', '2025-11-17 07:09:30', NULL),
+(110, NULL, 6, NULL, 'Screen Recording 2025-11-09 174325.mp4', 'uploads/Screen Recording 2025-11-09 174325.mp4', 'mp4', NULL, NULL, 'Private', NULL, '2025-11-21 21:54:58', '2025-11-21 21:55:15', '2025-11-21 21:55:15'),
+(111, NULL, 6, NULL, 'Hasil edit foto night street style.png', 'uploads/Hasil edit foto night street style.png', 'png', NULL, NULL, 'Private', NULL, '2025-11-21 21:54:59', '2025-11-21 21:55:15', '2025-11-21 21:55:15'),
+(112, 51, 12, NULL, 'Hasil edit foto santai tepi danau.png', 'uploads/Hasil edit foto santai tepi danau.png', 'png', NULL, NULL, 'Private', NULL, '2025-11-22 09:43:14', '2025-11-22 10:09:44', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `file_access_logs`
+-- Struktur dari tabel `file_access_logs`
 --
 
 CREATE TABLE `file_access_logs` (
@@ -103,7 +110,7 @@ CREATE TABLE `file_access_logs` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `file_shares`
+-- Struktur dari tabel `file_shares`
 --
 
 CREATE TABLE `file_shares` (
@@ -116,17 +123,10 @@ CREATE TABLE `file_shares` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `file_shares`
---
-
-INSERT INTO `file_shares` (`id`, `file_id`, `shared_by`, `shared_with`, `permission`, `message`, `created_at`) VALUES
-(1, 105, 6, 7, 'view', 'ini ya', '2025-11-15 10:15:23');
-
 -- --------------------------------------------------------
 
 --
--- Table structure for table `folders`
+-- Struktur dari tabel `folders`
 --
 
 CREATE TABLE `folders` (
@@ -143,19 +143,20 @@ CREATE TABLE `folders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `folders`
+-- Dumping data untuk tabel `folders`
 --
 
 INSERT INTO `folders` (`id`, `name`, `parent_id`, `divisi`, `status`, `created_by`, `created_at`, `updated_at`, `deleted_at`, `sort_order`) VALUES
 (17, 'Laravell', NULL, NULL, 'Private', 6, '2025-11-02 05:46:48', '2025-11-12 05:02:26', NULL, 0),
-(45, 'New folder (2)', NULL, NULL, 'Private', 6, '2025-11-12 05:15:11', '2025-11-12 05:26:37', NULL, 0),
+(45, 'New folder (2)', NULL, NULL, 'Private', 6, '2025-11-12 05:15:11', '2025-11-22 09:58:44', '2025-11-22 09:58:44', 0),
 (46, 'New folder (3)', 17, NULL, 'Private', 6, '2025-11-12 05:34:15', '2025-11-12 05:34:38', NULL, 0),
-(47, 'New folder', 45, NULL, 'Private', 6, '2025-11-12 05:34:15', '2025-11-12 05:35:13', NULL, 0);
+(47, 'New folder', 45, NULL, 'Private', 6, '2025-11-12 05:34:15', '2025-11-22 09:58:44', '2025-11-22 09:58:44', 0),
+(51, 'New folder (2)', NULL, NULL, 'Private', 12, '2025-11-22 09:43:13', '2025-11-22 09:54:30', '2025-11-22 09:54:30', 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `migrations`
+-- Struktur dari tabel `migrations`
 --
 
 CREATE TABLE `migrations` (
@@ -165,7 +166,7 @@ CREATE TABLE `migrations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `migrations`
+-- Dumping data untuk tabel `migrations`
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
@@ -174,7 +175,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `notifications`
+-- Struktur dari tabel `notifications`
 --
 
 CREATE TABLE `notifications` (
@@ -189,7 +190,7 @@ CREATE TABLE `notifications` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `notifications`
+-- Dumping data untuk tabel `notifications`
 --
 
 INSERT INTO `notifications` (`id`, `type`, `notifiable_type`, `notifiable_id`, `data`, `read_at`, `created_at`, `updated_at`) VALUES
@@ -198,7 +199,7 @@ INSERT INTO `notifications` (`id`, `type`, `notifiable_type`, `notifiable_id`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Struktur dari tabel `users`
 --
 
 CREATE TABLE `users` (
@@ -206,32 +207,35 @@ CREATE TABLE `users` (
   `name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('admin','editor','viewer') DEFAULT 'viewer',
+  `role` enum('superadmin','admin','user') NOT NULL DEFAULT 'user',
+  `status` enum('aktif','nonaktif') NOT NULL DEFAULT 'aktif',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `photo` varchar(100) NOT NULL
+  `photo` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
+-- Dumping data untuk tabel `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `created_at`, `updated_at`, `photo`) VALUES
-(6, 'Admin', 'admin@gmail.com', '$2y$10$1u2iyMIauzrfyG94oN7PWOwjdI4CelSViQ9uUMimxRKzYo8YpYJZa', 'admin', '2025-10-17 20:55:07', '2025-11-08 23:38:05', 'profile_photos/6.png'),
-(7, 'Diva', 'diva@gmail.com', '$2y$10$lWGRfAu/VtfkICobujE.3.sGdoURnVDD9UlI1GnSoo0XNnCJZQ8TC', 'editor', '2025-10-17 20:57:07', '2025-10-17 20:57:07', '');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `status`, `created_at`, `updated_at`, `photo`) VALUES
+(6, 'Admin', 'admin@gmail.com', '$2y$10$1u2iyMIauzrfyG94oN7PWOwjdI4CelSViQ9uUMimxRKzYo8YpYJZa', 'admin', 'aktif', '2025-10-17 20:55:07', '2025-11-22 03:15:58', 'profile_photos/6_1763806558.jpeg'),
+(8, 'Diva', 'diva@gmail.com', '$2y$10$2FpV3h3R748xE289ylYIVOc0vWAy4cKrSfsJCD7QCCl7Z4zDSFO3y', 'user', 'aktif', '2025-11-17 01:26:21', '2025-11-22 16:40:39', 'profile_photos/8.png'),
+(9, 'Coba', 'coba@gmail.com', '$2y$10$LPk0/28LzPRw7zPoU6FMpOsyXrlQAIfUBqMAo/Si/MHd8b6C9f1Vm', 'user', 'nonaktif', '2025-11-17 02:47:38', '2025-11-22 09:20:39', 'profile_photos/9_1763825251.png'),
+(12, 'Super Admin', 'superadmin@gmail.com', '$2y$10$UxEW8OorprO.E82n57Zbaul9QgMwUqh44F0KNNMKxP3DIbhI1XCye', 'superadmin', 'aktif', '2025-11-22 08:51:08', '2025-11-22 16:35:21', 'profile_photos/12.png');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `favorites`
+-- Indeks untuk tabel `favorites`
 --
 ALTER TABLE `favorites`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `files`
+-- Indeks untuk tabel `files`
 --
 ALTER TABLE `files`
   ADD PRIMARY KEY (`id`),
@@ -239,7 +243,7 @@ ALTER TABLE `files`
   ADD KEY `files_uploaded_by_fk` (`uploaded_by`);
 
 --
--- Indexes for table `file_access_logs`
+-- Indeks untuk tabel `file_access_logs`
 --
 ALTER TABLE `file_access_logs`
   ADD PRIMARY KEY (`id`),
@@ -247,7 +251,7 @@ ALTER TABLE `file_access_logs`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `file_shares`
+-- Indeks untuk tabel `file_shares`
 --
 ALTER TABLE `file_shares`
   ADD PRIMARY KEY (`id`),
@@ -255,7 +259,7 @@ ALTER TABLE `file_shares`
   ADD KEY `shared_with` (`shared_with`);
 
 --
--- Indexes for table `folders`
+-- Indeks untuk tabel `folders`
 --
 ALTER TABLE `folders`
   ADD PRIMARY KEY (`id`),
@@ -263,98 +267,98 @@ ALTER TABLE `folders`
   ADD KEY `idx_parent_id` (`parent_id`);
 
 --
--- Indexes for table `migrations`
+-- Indeks untuk tabel `migrations`
 --
 ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `notifications`
+-- Indeks untuk tabel `notifications`
 --
 ALTER TABLE `notifications`
   ADD PRIMARY KEY (`id`),
   ADD KEY `notifications_notifiable_type_notifiable_id_index` (`notifiable_type`,`notifiable_id`);
 
 --
--- Indexes for table `users`
+-- Indeks untuk tabel `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `favorites`
+-- AUTO_INCREMENT untuk tabel `favorites`
 --
 ALTER TABLE `favorites`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
--- AUTO_INCREMENT for table `files`
+-- AUTO_INCREMENT untuk tabel `files`
 --
 ALTER TABLE `files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
 
 --
--- AUTO_INCREMENT for table `file_access_logs`
+-- AUTO_INCREMENT untuk tabel `file_access_logs`
 --
 ALTER TABLE `file_access_logs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `file_shares`
+-- AUTO_INCREMENT untuk tabel `file_shares`
 --
 ALTER TABLE `file_shares`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `folders`
+-- AUTO_INCREMENT untuk tabel `folders`
 --
 ALTER TABLE `folders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
--- AUTO_INCREMENT for table `migrations`
+-- AUTO_INCREMENT untuk tabel `migrations`
 --
 ALTER TABLE `migrations`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- Constraints for dumped tables
+-- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
 
 --
--- Constraints for table `files`
+-- Ketidakleluasaan untuk tabel `files`
 --
 ALTER TABLE `files`
   ADD CONSTRAINT `files_folder_fk` FOREIGN KEY (`folder_id`) REFERENCES `folders` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `files_uploaded_by_fk` FOREIGN KEY (`uploaded_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `file_access_logs`
+-- Ketidakleluasaan untuk tabel `file_access_logs`
 --
 ALTER TABLE `file_access_logs`
   ADD CONSTRAINT `file_access_logs_ibfk_1` FOREIGN KEY (`file_id`) REFERENCES `files` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `file_access_logs_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `file_shares`
+-- Ketidakleluasaan untuk tabel `file_shares`
 --
 ALTER TABLE `file_shares`
   ADD CONSTRAINT `file_shares_ibfk_1` FOREIGN KEY (`file_id`) REFERENCES `files` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `file_shares_ibfk_2` FOREIGN KEY (`shared_with`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `folders`
+-- Ketidakleluasaan untuk tabel `folders`
 --
 ALTER TABLE `folders`
   ADD CONSTRAINT `fk_folders_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
