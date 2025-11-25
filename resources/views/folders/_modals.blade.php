@@ -1,6 +1,20 @@
 @php
-  // pastikan $allFolders ada (defensive)
-  $allFolders = $allFolders ?? \App\Models\Folder::all();
+use App\Models\Folder;
+use Illuminate\Support\Facades\Auth;
+
+$allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth::id())->get();
+
+$getSubfolderIds = function($folder) use (&$getSubfolderIds) {
+    $ids = [];
+    foreach ($folder->children as $child) {
+        $ids[] = $child->id;
+        $ids = array_merge($ids, $getSubfolderIds($child));
+    }
+    return $ids;
+};
+
+// Ambil semua ID folder yang tidak boleh dijadikan parent (folder itu sendiri + semua subfolder)
+$invalidFolderIds = array_merge([$folder->id], $getSubfolderIds($folder));
 @endphp
 
 {{-- Modal Edit Folder --}}

@@ -1,6 +1,9 @@
 @php
-  // fallback: jika parent view tidak mengirim $allFolders, ambil semua folder dari DB
-  $allFolders = $allFolders ?? \App\Models\Folder::all();
+use App\Models\Folder;
+use Illuminate\Support\Facades\Auth;
+
+// fallback: jika parent view tidak mengirim $allFolders, ambil semua folder milik user login
+$allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth::id())->get();
 @endphp
 
 <div class="row g-3 mb-4">

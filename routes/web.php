@@ -12,6 +12,7 @@ use App\Http\Controllers\FolderShareController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TrashController;
 use Illuminate\Support\Facades\Password;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -124,13 +125,27 @@ Route::middleware('auth')->group(function () {
         Route::put('/files/{id}/move', [FileController::class, 'move'])->name('files.move');
 
         // Trash
-       Route::get('/trash', [App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
+    //    Route::get('/trash', [App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
+    //     Route::post('/trash/restore/{id}', [App\Http\Controllers\TrashController::class, 'restore'])->name('trash.restore');
+    //     Route::delete('/trash/delete/{id}', [App\Http\Controllers\TrashController::class, 'forceDelete'])->name('trash.forceDelete');
+    //     Route::post('/trash/restore-all', [App\Http\Controllers\TrashController::class, 'restoreAll'])->name('trash.restoreAll');
+    //     Route::delete('/trash/empty', [App\Http\Controllers\TrashController::class, 'empty'])->name('trash.empty');
+    //     Route::delete('/files/bulk-delete', [FileController::class, 'bulkDelete'])->name('files.bulkDelete');
+    //     });
+
+        Route::get('/trash', [App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
         Route::post('/trash/restore/{id}', [App\Http\Controllers\TrashController::class, 'restore'])->name('trash.restore');
         Route::delete('/trash/delete/{id}', [App\Http\Controllers\TrashController::class, 'forceDelete'])->name('trash.forceDelete');
         Route::post('/trash/restore-all', [App\Http\Controllers\TrashController::class, 'restoreAll'])->name('trash.restoreAll');
         Route::delete('/trash/empty', [App\Http\Controllers\TrashController::class, 'empty'])->name('trash.empty');
         Route::delete('/files/bulk-delete', [FileController::class, 'bulkDelete'])->name('files.bulkDelete');
-        });
+
+        // Trash Folders (TAMBAHKAN INI)
+        Route::post('/trash/folders/restore-all', [TrashController::class, 'restoreAllFolders'])->name('trash.folders.restoreAll');
+        Route::delete('/trash/folders/empty', [TrashController::class, 'emptyFolders'])->name('trash.folders.empty');
+        Route::post('/trash/folders/restore/{id}', [TrashController::class, 'restoreFolder'])->name('trash.folders.restore');
+        Route::delete('/trash/folders/delete/{id}', [TrashController::class, 'forceDeleteFolder'])->name('trash.folders.forceDelete');
+        Route::get('/trash/folders', [TrashController::class, 'index'])->name('trash.folders');
 
 
         // Route::get('/files/{id}', [FileController::class, 'show'])->name('files.show');
@@ -146,3 +161,4 @@ Route::middleware('auth')->group(function () {
             Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
         });
     });
+});

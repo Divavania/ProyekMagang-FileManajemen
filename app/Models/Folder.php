@@ -11,6 +11,7 @@ class Folder extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $dates = ['deleted_at'];
     protected $table = 'folders';
     protected $primaryKey = 'id';
     public $timestamps = true;
