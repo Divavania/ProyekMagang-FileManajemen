@@ -76,10 +76,12 @@
 
               {{-- Aksi --}}
               <td class="text-center">
-                <a href="{{ route('notifications.read', $notification->id) }}" 
-                  class="btn btn-sm btn-outline-success">
-                  <i class="bi bi-check2-circle"></i> Dilihat
-                </a>
+                @if(is_null($notification->read_at))
+                    <a href="{{ route('notifications.read', $notification->id) }}"
+                      class="text-decoration-none">
+                      <i class="bi bi-eye fs-5 text-primary"></i>
+                    </a>
+                @endif
               </td>
             </tr>
           @empty

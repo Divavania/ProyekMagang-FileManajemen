@@ -7,27 +7,60 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\File;
 use App\Models\User;
 use App\Models\Share;
+use App\Models\FolderShare;
+use App\Models\Folder;
 use App\Notifications\SharedNotification;
 
 class SharedController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $userId = Auth::id();
+        $sort = $request->query('sort', 'latest');
 
-        // File yang dibagikan oleh user login
-        $shared_by = Share::with(['file', 'receiver'])
-            ->where('shared_by', $userId)
-            ->latest()
-            ->get();
+        // FILE
+        $shared_file_by = Share::with(['file', 'receiver'])
+            ->where('shared_by', $userId)->get()
+            ->filter(fn($s) => $s->file);
 
-        // File yang diterima oleh user login
-        $shared_with = Share::with(['file', 'sender'])
-            ->where('shared_with', $userId)
-            ->latest()
-            ->get();
+        $shared_file_with = Share::with(['file', 'sender'])
+            ->where('shared_with', $userId)->get()
+            ->filter(fn($s) => $s->file);
 
-        return view('shared.index', compact('shared_by', 'shared_with'));
+        // FOLDER
+        $shared_folder_by = FolderShare::with(['folder', 'receiver'])
+            ->where('shared_by', $userId)->get()
+            ->filter(fn($s) => $s->folder);
+
+        $shared_folder_with = FolderShare::with(['folder', 'sender'])
+            ->where('shared_with', $userId)->get()
+            ->filter(fn($s) => $s->folder);
+
+        // 🔥 Gabungkan semua share (files + folders)
+        $allShared = $shared_file_by
+            ->merge($shared_file_with)
+            ->merge($shared_folder_by)
+            ->merge($shared_folder_with);
+
+        // Sortir
+        $allShared = $sort === 'oldest'
+            ? $allShared->sortBy('created_at')
+            : $allShared->sortByDesc('created_at');
+
+        $allShared = $allShared->values(); // reset index
+
+        // 🔥 Ambil user untuk dropdown share/edit share
+        $users = User::all();
+
+        return view('shared.index', compact(
+            'shared_file_by',
+            'shared_file_with',
+            'shared_folder_by',
+            'shared_folder_with',
+            'allShared',
+            'users',
+            'sort'
+        ));
     }
 
     public function store(Request $request, $id)
@@ -44,10 +77,7 @@ class SharedController extends Controller
 
         foreach ($emails as $email) {
             $receiver = User::where('email', $email)->first();
-
-            if (!$receiver) {
-                continue;
-            }
+            if (!$receiver) continue;
 
             // Simpan data share
             Share::create([
@@ -59,11 +89,24 @@ class SharedController extends Controller
             ]);
 
             // Kirim notifikasi (via database dan/atau email)
-            $receiver->notify(new SharedNotification($file, Auth::user(), $request->message));
-
+            $receiver->notify(new SharedNotification( $file, Auth::user(),'file', $request->message));
             $sharedCount++;
         }
 
         return back()->with('success', "File berhasil dibagikan ke {$sharedCount} pengguna!");
+    }
+
+    public function removeShare($id)
+    {
+        $share = Share::findOrFail($id);
+
+        // Hanya pengirim atau penerima boleh menghapus
+        if ($share->shared_by !== Auth::id() && $share->shared_with !== Auth::id()) {
+            abort(403);
+        }
+
+        $share->delete(); // hanya delete di DB, file aman
+
+        return back()->with('success', 'Akses file dibagikan berhasil dihapus.');
     }
 }

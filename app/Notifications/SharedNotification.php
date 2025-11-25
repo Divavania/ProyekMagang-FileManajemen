@@ -11,32 +11,36 @@ class SharedNotification extends Notification
 {
     use Queueable;
 
-    protected $file;
+    protected $item;     // file atau folder
     protected $sender;
     protected $message;
+    protected $type;     // 'file' atau 'folder'
 
-    public function __construct($file, $sender, $message = null)
+    public function __construct($item, $sender, $type = 'file', $message = null)
     {
-        $this->file = $file;
+        $this->item = $item;
         $this->sender = $sender;
+        $this->type = $type;
         $this->message = $message;
     }
 
-    // 🔔 Kirim notifikasi via database & email
+    // Kirim notifikasi via database
     public function via($notifiable)
     {
         return ['database'];
     }
 
-    // 💾 Simpan notifikasi ke database
+    // Simpan ke database
     public function toDatabase($notifiable)
     {
         return [
-            'title' => 'File dibagikan: ' . $this->file->file_name,
-            'message' => $this->sender->name . ' telah membagikan file kepada Anda.' .
-                         ($this->message ? ' Pesan: ' . $this->message : ''),
-            'file_id' => $this->file->id,
-            'link' => route('shared.index'), 
+            'title' => ucfirst($this->type) . ' dibagikan: ' . ($this->type === 'file' ? $this->item->file_name : $this->item->name),
+            'message' => $this->sender->name . ' telah membagikan ' . $this->type . ' "' . 
+             ($this->type === 'file' ? $this->item->file_name : $this->item->name) . 
+             '" kepada Anda.' . ($this->message ? ' Pesan: ' . $this->message : ''),
+            'item_type' => $this->type,
+            'item_id' => $this->item->id,
+            'link' => route('shared.index', ['type' => $this->type]), // arahkan ke halaman share index sesuai tipe
         ];
     }
 

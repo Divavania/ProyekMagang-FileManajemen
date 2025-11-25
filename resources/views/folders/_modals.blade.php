@@ -55,3 +55,47 @@
     </form>
   </div>
 </div>
+
+<div class="modal fade" id="shareFolderModal{{ $folder->id }}" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <form class="modal-content" method="POST" action="{{ route('folders.share', $folder->id) }}">
+      @csrf
+
+      <div class="modal-header">
+        <h5 class="modal-title">Bagikan Folder</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="mb-3">
+          <label>Email Pengguna</label>
+          <input type="text" name="email" class="form-control"
+                 placeholder="Masukkan satu atau lebih email, pisahkan dengan koma (,)"
+                 required>
+        </div>
+
+        <div class="mb-3">
+          <label>Izin Akses</label>
+          <select name="permission" class="form-select" required>
+            <option value="view">Lihat</option>
+            <option value="edit">Edit</option>
+            <option value="download">Unduh</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label>Pesan (Opsional)</label>
+          <textarea name="message" class="form-control" rows="3" placeholder="Tambahkan pesan..."></textarea>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-primary">Bagikan</button>
+      </div>
+
+    </form>
+  </div>
+</div>

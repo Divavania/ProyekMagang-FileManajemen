@@ -10,8 +10,20 @@ class NotificationController extends Controller
     public function index()
     {
         $user = Auth::user();
+
+        // Ambil notifikasi terbaru, paginate
         $notifications = $user->notifications()->latest()->paginate(10);
 
+        // Bisa diolah agar item_type dan item_id tersedia di view
+        $notifications->transform(function($notif) {
+            $data = $notif->data;
+            // item_type: 'file' atau 'folder'
+            $data['item_type'] = $data['item_type'] ?? 'file';
+            $data['item_id'] = $data['item_id'] ?? null;
+            return $notif->setAttribute('item_type', $data['item_type'])
+                         ->setAttribute('item_id', $data['item_id']);
+        });
+        
         return view('notifications.index', compact('notifications'));
     }
 
@@ -28,9 +40,9 @@ class NotificationController extends Controller
     public function markAllRead()
     {
         $user = Auth::user();
-        $user->unreadNotifications->markAllRead();
+        $user->unreadNotifications->markAsRead();
 
-        return redirect()->back()->with('success', 'All notifications marked as read.');
+        return redirect()->back()->with('success', 'Semua notifikasi telah dibaca');
     }
 
     public function deleteSelected(Request $request)

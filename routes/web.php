@@ -8,6 +8,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\SharedController;
+use App\Http\Controllers\FolderShareController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
@@ -76,9 +77,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/folders', [FolderController::class, 'index'])->name('folders.index');
         Route::get('/folders/create', [FolderController::class, 'create'])->name('folders.create');
         Route::put('/folders/{id}', [FolderController::class, 'update'])->name('folders.update');
+        Route::get('/folders/{id}/download', [FolderController::class, 'downloadZip'])->name('folders.downloadZip');
         Route::post('/folders/store', [FolderController::class, 'store'])->name('store.folder');
         Route::post('/upload-folder', [FileController::class, 'storeFolder'])->name('store.upload.folder');
         Route::delete('/folders/{id}', [FolderController::class, 'destroy'])->name('folders.destroy');
+        Route::post('/folders', [FolderController::class, 'store'])->name('folders.store');
         Route::get('/folders/{id}', [FolderController::class, 'show'])->name('folders.show');
         Route::post('/folders', [FolderController::class, 'store'])->name('folders.store');
 
@@ -98,7 +101,7 @@ Route::middleware('auth')->group(function () {
         // Notification
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::get('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
         Route::post('/notifications/delete-selected', [NotificationController::class, 'deleteSelected'])->name('notifications.deleteSelected');
 
         // Favorites
@@ -109,7 +112,13 @@ Route::middleware('auth')->group(function () {
         // Shared
         Route::get('/shared', [SharedController::class, 'index'])->name('shared.index');
         Route::post('/files/share/{id}', [SharedController::class, 'store'])->name('files.share');
+        Route::delete('/share/{id}', [SharedController::class, 'removeShare'])->name('share.remove');
         Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
+
+        // Folder sharing
+        Route::post('/folders/{id}/share', [FolderShareController::class, 'store'])->name('folders.share');
+        Route::get('/shared/folders', [FolderShareController::class, 'index'])->name('shared.folders');
+        Route::delete('/shared/folders/{id}', [FolderShareController::class, 'remove'])->name('shared.folders.remove');
 
          //Move
         Route::put('/files/{id}/move', [FileController::class, 'move'])->name('files.move');

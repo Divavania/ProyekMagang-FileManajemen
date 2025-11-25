@@ -51,4 +51,9 @@ public function isFavoritedBy($userId)
     return $this->favorites()->where('user_id', $userId)->exists();
 }
 
+public function folder() 
+{
+    return $this->belongsTo(Folder::class, 'folder_id');
+}
+
 }

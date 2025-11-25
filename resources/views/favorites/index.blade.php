@@ -8,12 +8,16 @@
 <div class="container-fluid mt-3">
   <div class="row g-3">
     @forelse($favorites as $fav)
-      @php 
-        $file = $fav->file;
-        if(!$file) continue;
-        $ext = strtolower(pathinfo($file->file_name, PATHINFO_EXTENSION));
-        $fileUrl = asset('storage/' . $file->file_path);
+      @php
+        $file   = $fav->file;     // relasi file
+        $folder = $fav->folder;   // relasi folder
       @endphp
+
+      @if($file)
+        @php 
+          $ext = strtolower(pathinfo($file->file_name, PATHINFO_EXTENSION));
+          $fileUrl = asset('storage/' . $file->file_path);
+        @endphp
 
       <div class="col-6 col-sm-4 col-md-3 file-item">
         <div class="card h-100 file-card position-relative shadow-sm border-0 rounded-3">
@@ -132,10 +136,41 @@
           </div>
         </div>
       </div>
+    @endif
+      {{-- FAVORIT: FOLDER --}}
+        @if($folder)
+          <div class="col-6 col-sm-4 col-md-3 file-item">
+            <div class="card h-100 shadow-sm border-0 rounded-3 bg-warning-subtle p-3 position-relative">
+
+              <div class="position-absolute top-0 start-0 m-2">
+                <button type="button"
+                        class="btn btn-sm p-0 bg-transparent border-0 toggle-favorite-folder"
+                        data-id="{{ $folder->id }}">
+                  <i class="bi bi-star-fill text-warning fs-5"></i>
+                </button>
+              </div>
+
+              <a href="{{ route('folders.show', $folder->id) }}" 
+                class="text-decoration-none text-dark">
+
+                <div class="text-center mt-4">
+                  <i class="bi bi-folder-fill fs-1 text-warning"></i>
+                </div>
+
+                <h6 class="text-center text-truncate mt-2" title="{{ $folder->name }}">
+                  {{ $folder->name }}
+                </h6>
+
+              </a>
+
+            </div>
+          </div>
+        @endif
+
     @empty
       <div class="col-12 text-center py-5 text-muted">
         <i class="bi bi-star text-secondary fs-1 d-block mb-2"></i>
-        Belum ada file favorit.
+        Belum ada file atau folder favorit.
       </div>
     @endforelse
   </div>
@@ -188,6 +223,32 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+
+  document.querySelectorAll('.toggle-favorite-folder').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const id = btn.dataset.id;
+      const card = btn.closest('.col-6, .col-sm-4, .col-md-3');
+      try {
+        const res = await fetch(`/favorites/folder/${id}`, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+          }
+        });
+        const data = await res.json();
+        if (data.favorited === false) {
+          card.style.transition = 'all 0.3s ease';
+          card.style.opacity = '0';
+          setTimeout(() => card.remove(), 300);
+        }
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Error', 'Terjadi kesalahan koneksi ke server.', 'error');
+      }
+    });
+  });  
 });
 </script>
 @endsection

@@ -42,6 +42,12 @@
         @elseif($extension === 'pdf')
           <iframe src="{{ $fileUrl }}" class="w-100 rounded-3 border-0" style="height:70vh;"></iframe>
 
+        @elseif($extension === 'txt')
+          <pre class="text-white p-3 rounded w-100" 
+              style="max-height:70vh; overflow:auto; background:#111;">
+        {{ Storage::disk('public')->get($file->file_path) }}
+          </pre>
+          
         @else
           <div class="text-center text-light opacity-75">
             <i class="bi bi-file-earmark-text fs-1 mb-3"></i>

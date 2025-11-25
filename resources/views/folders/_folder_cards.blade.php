@@ -17,18 +17,52 @@
 
             <ul class="dropdown-menu dropdown-menu-end">
               <li>
-                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editFolderModal{{ $folder->id }}">✏️ Rename</button>
+                <button type="button" class="dropdown-item"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editFolderModal{{ $folder->id }}">
+                  <i class="bi bi-pencil me-2"></i>Ubah Nama
+                </button>
+              </li>
+
+              {{-- Pindahkan --}}
+              <li>
+                <button type="button" class="dropdown-item"
+                        data-bs-toggle="modal"
+                        data-bs-target="#moveFolderModal{{ $folder->id }}">
+                  <i class="bi bi-folder-symlink me-2"></i>Pindahkan
+                </button>
+              </li>
+
+              {{-- Berbagi Folder --}}
+              <li>
+                  <button type="button" class="dropdown-item"
+                          data-bs-toggle="modal"
+                          data-bs-target="#shareFolderModal{{ $folder->id }}">
+                      <i class="bi bi-share me-2"></i>Bagikan
+                  </button>
               </li>
 
               <li>
-                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#moveFolderModal{{ $folder->id }}">📁 Move</button>
+                <button type="button"
+                        class="dropdown-item toggle-favorite-folder"
+                        data-id="{{ $folder->id }}"
+                        data-url="{{ route('favorites.toggle.folder', $folder->id) }}">
+                  @if($folder->isFavoritedBy(auth()->id()))
+                    <i class="bi bi-star-fill text-warning me-2"></i>Hapus dari Favorit
+                  @else
+                    <i class="bi bi-star me-2"></i>Tambah ke Favorit
+                  @endif
+                </button>
               </li>
 
               <li>
-                <form action="{{ route('folders.destroy', $folder->id) }}" method="POST" onsubmit="return confirm('Yakin hapus folder ini?')">
+                <form action="{{ route('folders.destroy', $folder->id) }}" method="POST"
+                      onsubmit="return confirm('Yakin ingin menghapus folder ini? Semua file dan subfolder juga akan terhapus!')">
                   @csrf
                   @method('DELETE')
-                  <button type="submit" class="dropdown-item text-danger">🗑️ Delete</button>
+                  <button type="submit" class="dropdown-item text-danger">
+                    <i class="bi bi-trash me-2"></i>Hapus
+                  </button>
                 </form>
               </li>
             </ul>
@@ -49,9 +83,42 @@
   @endforelse
 </div>
 
-{{--  CSS  --}}
-<style>
-  .small-card { font-size: 0.9rem; }
-  .folder-card:hover { transform: scale(1.02); transition: 0.2s; }
-  .table td, .table th { vertical-align: middle !important; }
-</style>
+<script>
+  document.querySelectorAll('.toggle-favorite-folder').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const folderId = btn.dataset.id;
+      const url = btn.dataset.url;
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+          }
+        });
+
+        const data = await res.json();
+
+        if (data.status === 'ok') {
+          // update icon
+          if (data.favorited) {
+            btn.innerHTML = `<i class="bi bi-star-fill text-warning me-2"></i>Hapus dari Favorit`;
+          } else {
+            btn.innerHTML = `<i class="bi bi-star me-2"></i>Tambah ke Favorit`;
+
+            // Jika berada di halaman /favorites → hapus card dari DOM
+            const isFavoritesPage = window.location.pathname.includes('/favorites');
+            if (isFavoritesPage) {
+              const card = btn.closest('.col-lg-3') || btn.closest('.folder-card');
+              if (card) card.remove();
+            }
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Error', 'Gagal terhubung ke server.', 'error');
+      }
+    });
+  });
+</script>

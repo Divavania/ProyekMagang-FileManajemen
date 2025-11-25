@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
 
 class Folder extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'folders';
     protected $primaryKey = 'id';
@@ -20,6 +21,10 @@ class Folder extends Model
         'created_by',
     ];
 
+    public function shares()
+    {
+        return $this->hasMany(FolderShare::class);
+    }
     // Relasi ke FileItem
     public function files()
     {
@@ -40,5 +45,15 @@ class Folder extends Model
     public function children()
     {
         return $this->hasMany(Folder::class, 'parent_id');
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'folder_id');
+    }
+
+    public function isFavoritedBy($userId)
+    {
+        return $this->favorites()->where('user_id', $userId)->exists();
     }
 }

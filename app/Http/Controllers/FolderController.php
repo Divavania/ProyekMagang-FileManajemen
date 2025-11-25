@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Folder;
+use ZipArchive;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FolderController extends Controller
 {
@@ -206,5 +209,52 @@ class FolderController extends Controller
         $folder->save();
 
         return redirect()->back()->with('success', 'Folder berhasil dipindah.');
+    }
+
+    public function downloadZip($id)
+    {
+        $folder = Folder::with(['children', 'files'])->findOrFail($id);
+
+        // Nama zip (tambah timestamp agar unik)
+        $zipName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $folder->name) . '_' . time() . '.zip';
+        $tmpDir = storage_path('app/tmp');
+        if (!file_exists($tmpDir)) mkdir($tmpDir, 0755, true);
+        $zipPath = $tmpDir . DIRECTORY_SEPARATOR . $zipName;
+
+        $zip = new ZipArchive();
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            return back()->with('error', 'Gagal membuat file zip.');
+        }
+
+        // Rekursif tambahkan semua folder & file
+        $this->addFolderToZip($folder, $zip);
+
+        $zip->close();
+
+        return response()->download($zipPath, $zipName)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Tambahkan folder dan semua file/subfolder ke zip secara rekursif
+     */
+    private function addFolderToZip(Folder $folder, ZipArchive $zip, $parentPath = '')
+    {
+        $currentPath = $parentPath ? $parentPath . '/' . $folder->name : $folder->name;
+
+        // Tambahkan folder kosong (ZipArchive tidak otomatis menambahkan folder)
+        $zip->addEmptyDir($currentPath);
+
+        // Tambahkan file di folder ini
+        foreach ($folder->files as $file) {
+            $storagePath = storage_path('app/public/' . $file->file_path);
+            if (file_exists($storagePath)) {
+                $zip->addFile($storagePath, $currentPath . '/' . $file->file_name);
+            }
+        }
+
+        // Rekursif ke subfolder
+        foreach ($folder->children as $child) {
+            $this->addFolderToZip($child, $zip, $currentPath);
+        }
     }
 }
