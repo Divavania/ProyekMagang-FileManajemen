@@ -10,11 +10,13 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\SharedController;
 use App\Http\Controllers\FolderShareController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TrashController;
 use Illuminate\Support\Facades\Password;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -38,13 +40,31 @@ Route::post('/forgot-password', function (Request $request) {
 })->name('password.email');
 
 // 🔁 Reset password
-Route::get('/reset-password/{token}', fn($token) => view('auth.reset-password', ['token' => $token]))->name('password.reset');
+Route::get('/reset-password/{token}', function ($token) {
+    return view('auth.reset-password', [
+        'token' => $token,
+        'email' => request()->query('email')
+    ]);
+})->name('password.reset');
+
 Route::post('/reset-password', function (Request $request) {
     $request->validate([
-        'token' => 'required',
-        'email' => 'required|email',
-        'password' => 'required|min:8|confirmed',
-    ]);
+    'token' => 'required',
+    'email' => 'required|email',
+    'password' => [
+        'required',
+        'confirmed',
+        'min:8',
+        'regex:/[A-Z]/',      // Huruf besar
+        'regex:/[a-z]/',      // Huruf kecil
+        'regex:/[0-9]/',      // Angka
+        'regex:/[@$!%*?&#]/', // Simbol
+    ],
+], [
+    'password.min' => 'Kata sandi minimal harus terdiri dari 8 karakter.',
+    'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
+    'password.regex' => 'Kata sandi harus mengandung huruf besar, huruf kecil, angka, dan simbol.',
+]);
 
     $status = Password::reset(
         $request->only('email', 'password', 'password_confirmation', 'token'),
@@ -57,15 +77,16 @@ Route::post('/reset-password', function (Request $request) {
     );
 
     return $status === Password::PASSWORD_RESET
-        ? redirect()->route('login')->with('success', __($status))
-        : back()->with(['error' => __($status)]);
+        ? redirect()->route('login')->with('success',  'Kata sandi berhasil direset. Silakan login.')
+        : back()->with(['error' => 'Token tidak valid atau sudah kedaluwarsa.']);
 })->name('password.update');
 
-// 🧭 Dashboard (auth only)
 Route::middleware('auth')->group(function () {
+
+    // Dashboard (auth only)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::middleware('auth')->group(function () {
+    //Profile routes
         Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
         Route::post('/profile/update-info', [ProfileController::class, 'updateInfo'])->name('profile.updateInfo');
         Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
@@ -73,8 +94,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/profile/delete-photo', [ProfileController::class, 'deletePhoto'])->name('profile.deletePhoto');
     });
 
-    // Pastikan ini ada di dalam middleware auth, ya
-    Route::middleware(['auth'])->group(function () {
+    //Folders
         Route::get('/folders', [FolderController::class, 'index'])->name('folders.index');
         Route::get('/folders/create', [FolderController::class, 'create'])->name('folders.create');
         Route::put('/folders/{id}', [FolderController::class, 'update'])->name('folders.update');
@@ -94,6 +114,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/upload-file', [FileController::class, 'store'])->name('store.file');
         Route::delete('/delete-file/{id}', [FileController::class, 'destroy'])->name('delete.file');
 
+        // Files
         Route::get('/files', [FileController::class, 'index'])->name('files.index');
         Route::get('/files/download/{id}', [FileController::class, 'download'])->name('files.download');
         Route::put('/files/{id}', [FileController::class, 'update'])->name('files.update');
@@ -133,6 +154,7 @@ Route::middleware('auth')->group(function () {
     //     Route::delete('/files/bulk-delete', [FileController::class, 'bulkDelete'])->name('files.bulkDelete');
     //     });
 
+        //Trash Files
         Route::get('/trash', [App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
         Route::post('/trash/restore/{id}', [App\Http\Controllers\TrashController::class, 'restore'])->name('trash.restore');
         Route::delete('/trash/delete/{id}', [App\Http\Controllers\TrashController::class, 'forceDelete'])->name('trash.forceDelete');
@@ -140,7 +162,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/trash/empty', [App\Http\Controllers\TrashController::class, 'empty'])->name('trash.empty');
         Route::delete('/files/bulk-delete', [FileController::class, 'bulkDelete'])->name('files.bulkDelete');
 
-        // Trash Folders (TAMBAHKAN INI)
+        // Trash Folders 
         Route::post('/trash/folders/restore-all', [TrashController::class, 'restoreAllFolders'])->name('trash.folders.restoreAll');
         Route::delete('/trash/folders/empty', [TrashController::class, 'emptyFolders'])->name('trash.folders.empty');
         Route::post('/trash/folders/restore/{id}', [TrashController::class, 'restoreFolder'])->name('trash.folders.restore');
@@ -153,12 +175,19 @@ Route::middleware('auth')->group(function () {
         Route::post('/files', [FileController::class, 'store'])->name('files.store');
 
         // 🟦 User Management (hanya admin/superadmin)
-        Route::middleware(['auth'])->group(function () {
             Route::get('/users', [UserController::class, 'index'])->name('users.index');
             Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
             Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
             Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
             Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
-        });
-    });
-});
+
+         //ACTIVITY LOG 
+        Route::get('/activity-logs', [ActivityLogController::class, 'index'])
+    ->name('activity.logs')
+    ->middleware('auth');
+
+    
+        
+
+    
+  

@@ -193,16 +193,24 @@
     <i class="bi bi-trash"></i> Sampah
   </a>
 
-  {{-- Menu tambah user & log aktivitas untuk admin & superadmin --}}
-  @if(Auth::check() && in_array(Auth::user()->role, ['admin', 'superadmin']))
-    <a href="{{ route('users.index') }}" class="{{ request()->is('users*') ? 'active' : '' }}">
-      <i class="bi bi-person-plus"></i> Tambah User
-    </a>
+   {{-- Menu tambah user & log aktivitas untuk admin & superadmin --}}
+  @if(Auth::check())
 
-    <a href="#" class="{{ request()->is('activity-log*') ? 'active' : '' }}">
-      <i class="bi bi-clipboard-data"></i> Log Aktivitas
+    {{-- ADMIN & SUPERADMIN boleh tambah user --}}
+    @if(Auth::check() && in_array(Auth::user()->role, ['admin', 'superadmin']))
+    <a href="{{ route('users.index') }}" class="{{ request()->is('users*') ? 'active' : '' }}">
+        <i class="bi bi-person-plus"></i> Tambah User
     </a>
-  @endif
+    @endif
+
+    {{-- Hanya SUPERADMIN boleh lihat log aktivitas --}}
+    @if(Auth::check() && Auth::user()->role === 'superadmin')
+    <a href="{{ route('activity.logs') }}" class="{{ request()->is('activity-logs') ? 'active' : '' }}">
+        <i class="bi bi-clipboard-data"></i> Log Aktivitas
+    </a>
+    @endif
+
+@endif
 
   <form action="{{ route('logout') }}" method="POST" class="mt-3">
     @csrf

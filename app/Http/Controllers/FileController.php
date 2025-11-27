@@ -9,6 +9,7 @@ use App\Notifications\FileSharedNotification;
 use App\Models\User;
 use App\Models\File;
 use App\Models\Folder;
+use function logActivity;
 
 class FileController extends Controller
 {
@@ -80,6 +81,7 @@ class FileController extends Controller
             'file_path' => $path,
             'file_type' => strtolower($file->getClientOriginalExtension()),
             'file_size' => $file->getSize(),
+            'mime_type' => $file->getClientMimeType(),
             'description' => $request->description,
         ]);
 
@@ -90,6 +92,8 @@ class FileController extends Controller
     public function destroy($id)
     {
         $file = File::where('id', $id)->where('uploaded_by', Auth::id())->firstOrFail();
+
+        logActivity("Menghapus File", "Menghapus file {$file->file_name}");
 
         if ($file->file_path && Storage::disk('public')->exists($file->file_path)) {
             Storage::disk('public')->delete($file->file_path);
@@ -110,6 +114,9 @@ class FileController extends Controller
                     Storage::disk('public')->delete($f->file_path);
                 }
             }
+
+            logActivity("Menghapus beberapa file: " . implode(', ', $files->pluck('file_name')->toArray()));
+
             File::whereIn('id', $ids)->where('uploaded_by', Auth::id())->delete();
             return redirect()->route('files.index')->with('success', 'File terpilih berhasil dihapus.');
         }
@@ -129,6 +136,8 @@ class FileController extends Controller
 
         $extension = pathinfo($file->file_name, PATHINFO_EXTENSION);
         $newName = $request->file_name . '.' . $extension;
+
+        logActivity("Rename File", "Rename dari {$file->file_name} menjadi {$newName}");
 
         $oldPath = $file->file_path;
         $newPath = dirname($oldPath) . '/' . $newName;
@@ -151,6 +160,9 @@ class FileController extends Controller
         $file = File::where('id', $id)->where('uploaded_by', Auth::id())->firstOrFail();
         $filePath = storage_path('app/public/' . $file->file_path);
 
+       logActivity("Download File", "Mengunduh file {$file->file_name}");
+
+
         if (!file_exists($filePath)) {
             return back()->with('error', 'File tidak ditemukan di server.');
         }
@@ -162,6 +174,9 @@ class FileController extends Controller
     public function updateShare(Request $request, $id)
     {
         $file = File::where('id', $id)->where('uploaded_by', Auth::id())->firstOrFail();
+        
+        logActivity("Mengubah pengaturan sharing untuk file: {$file->file_name}");
+
         $type = $request->share_type;
         $file->share_type = $type;
         $file->shared_with = $type === 'selective' ? json_encode($request->shared_with ?: []) : null;
@@ -170,7 +185,7 @@ class FileController extends Controller
         return back()->with('success', 'Pengaturan berbagi berhasil diperbarui.');
     }
 
-    // Pindahkan file (AJAX/fetch)
+    // Pindahkan file 
    public function move(Request $request, $id)
 {
     $request->validate([
@@ -178,31 +193,39 @@ class FileController extends Controller
     ]);
 
     $file = File::findOrFail($id);
+
+    $targetFolder = Folder::findOrFail($request->folder_id);
+    
+    logActivity(
+        "Memindahkan File",
+        "File {$file->file_name} dipindahkan ke folder {$targetFolder->name}"
+    );
+
     $file->folder_id = $request->folder_id;
     $file->save();
 
     return redirect()->back()->with('success', 'File berhasil dipindahkan!');
 }
-
+//Share Link File
     public function shareLink($id)
 {
     $file = File::findOrFail($id);
 
-    // Bisa langsung return URL file yang bisa diakses publik
-    // Misal pakai storage link
+    logActivity("Mengambil share link untuk file: {$file->file_name}");
+
     $link = asset('storage/' . $file->file_path);
 
-    // Kalau mau ditampilkan di view modal, kita return JSON
     return response()->json(['link' => $link]);
 }
 
-
-    // Pindahkan file (form biasa)
+    // Pindahkan folder via form
     public function moveToFolder(Request $request, File $file)
     {
         $request->validate([
             'folder_id' => 'required|exists:folders,id',
         ]);
+
+        logActivity("File {$file->file_name} dipindahkan ke folder ID {$request->folder_id}");
 
         $file->folder_id = $request->folder_id;
         $file->save();
@@ -215,6 +238,8 @@ class FileController extends Controller
 {
     $file = File::findOrFail($request->file_id);
     $receiver = User::findOrFail($request->receiver_id);
+
+    logActivity("Membagikan file {$file->file_name} kepada {$receiver->name}");
 
     // kirim notifikasi ke user penerima
     $receiver->notify(new FileSharedNotification($file, 'file'));

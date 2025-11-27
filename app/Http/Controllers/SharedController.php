@@ -52,6 +52,8 @@ class SharedController extends Controller
         // 🔥 Ambil user untuk dropdown share/edit share
         $users = User::all();
 
+        logActivity('view_shared_page', 'Melihat halaman file & folder yang dibagikan');
+
         return view('shared.index', compact(
             'shared_file_by',
             'shared_file_with',
@@ -93,6 +95,8 @@ class SharedController extends Controller
             $sharedCount++;
         }
 
+        logActivity('share_file', "Membagikan file {$file->file_name} ke {$sharedCount} pengguna");
+
         return back()->with('success', "File berhasil dibagikan ke {$sharedCount} pengguna!");
     }
 
@@ -106,6 +110,8 @@ class SharedController extends Controller
         }
 
         $share->delete(); // hanya delete di DB, file aman
+
+        logActivity('remove_file_share', "Menghapus akses share file: {$share->file->file_name}");
 
         return back()->with('success', 'Akses file dibagikan berhasil dihapus.');
     }

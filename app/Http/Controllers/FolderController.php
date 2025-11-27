@@ -46,6 +46,8 @@ class FolderController extends Controller
             'created_by' => auth()->id(),
         ]);
 
+        logActivity('create_folder', 'Membuat folder: ' . $folder->name);
+
         return back()->with('success', 'Folder created successfully.');
     }
 
@@ -126,6 +128,8 @@ class FolderController extends Controller
 
         $folder->update(['name' => $request->name]);
 
+        logActivity('update_folder', "Mengubah nama folder dari '$oldName' menjadi '$folder->name'");
+
         // Redirect sesuai kondisi
         if ($folder->parent_id) {
             return redirect()->route('folders.show', $folder->parent_id)
@@ -163,6 +167,8 @@ class FolderController extends Controller
             ->firstOrFail();
 
         $this->deleteFolderRecursive($folder);
+
+        logActivity('delete_folder', 'Menghapus folder ke trash: ' . $name);
 
         return redirect()->route('trash.folders')
             ->with('success', 'Folder berhasil dipindahkan ke sampah.');
@@ -224,6 +230,11 @@ class FolderController extends Controller
         $folder->parent_id = $request->parent_id ?: null; // null = root
         $folder->save();
 
+        logActivity(
+            'move_folder',
+            "Memindahkan folder {$folder->name} ke parent_id: " . ($request->parent_id ?? 'root')
+        );
+
         return back()->with('success', 'Folder berhasil dipindah.');
     }
 
@@ -272,6 +283,8 @@ class FolderController extends Controller
             }
         }
 
+        logActivity('upload_folder', 'Upload folder menggunakan drag & drop');
+
         return response()->json(['success' => true, 'message' => 'Folders uploaded successfully!']);
     }
 
@@ -309,6 +322,8 @@ class FolderController extends Controller
         $this->addFolderToZip($folder, $zip);
 
         $zip->close();
+
+        logActivity('download_folder', 'Download ZIP folder: ' . $folder->name);
 
         return response()->download($zipPath, $zipName)->deleteFileAfterSend(true);
     }
