@@ -22,61 +22,91 @@
     padding-left: 230px;
   }
 
-  /* === SIDEBAR === */
+/* === SIDEBAR === */
+.sidebar {
+  height: 100vh;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  width: 230px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+  z-index: 1050;
+  transform: translateX(0); /* default desktop = terbuka */
+}
+
+/* Link & button di dalam sidebar */
+.sidebar a,
+.sidebar button.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  color: #333;
+  border-radius: 8px;
+  text-decoration: none;
+  margin-bottom: 5px;
+  transition: background 0.2s ease, color 0.2s ease;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+}
+
+.sidebar a i,
+.sidebar button i {
+  font-size: 1.2rem;
+}
+
+.sidebar a:hover,
+.sidebar button.dropdown-toggle:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* === OVERLAY (mobile) === */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1500;
+  display: none;
+}
+
+/* === MOBILE === */
+@media (max-width: 991px) {
   .sidebar {
-    height: 100vh;
-    background: #fff;
-    border-right: 1px solid #ddd;
-    padding: 20px;
-    width: 230px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    overflow-y: auto;
-    transition: all 0.3s ease;
-    z-index: 1050;
-  }
-
-  .sidebar a, .sidebar button.dropdown-toggle {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    color: #333;
-    border-radius: 8px;
-    text-decoration: none;
-    margin-bottom: 5px;
-    transition: background 0.2s ease, color 0.2s ease;
-    width: 100%;
-    background: none;
-    border: none;
-    text-align: left;
-  }
-
-  .sidebar a i, .sidebar button i {
-    font-size: 1.2rem;
+    transform: translateX(-230px); /* default tertutup */
   }
 
   .sidebar.active {
-  transform: translateX(0);
-  }
-
-  .sidebar a:hover,
-  .sidebar button.dropdown-toggle:hover {
-    background-color: #007bff;
-    color: #fff;
-  }
-
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.3);
-    z-index: 1500;
-    display: none;
+    transform: translateX(0); /* buka */
   }
 
   .sidebar.active + .sidebar-overlay {
-  display: block;
+    display: block;
+  }
+}
+
+/* === DESKTOP === */
+@media (min-width: 992px) {
+  body.sidebar-open {
+    padding-left: 230px;
+  }
+
+  body.sidebar-closed {
+    padding-left: 0 !important;
+  }
+
+  .sidebar.closed {
+    transform: translateX(-230px); /* tutup */
+  }
+}
+  .sidebar.closed + .sidebar-overlay {
+    display: none;
   }
 
   /* === MAIN CONTENT === */
@@ -321,20 +351,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggle = document.getElementById('sidebarToggle');
   const overlay = document.getElementById('sidebarOverlay');
 
- if (toggle && sidebar) {
-    toggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      sidebar.classList.toggle('active');
-      overlay && (overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none');
-    });
+  // Default desktop = sidebar terbuka
+  if (window.innerWidth >= 992) {
+    document.body.classList.add('sidebar-open');
   }
 
-  if (overlay && sidebar) {
-    overlay.addEventListener('click', () => {
-      sidebar.classList.remove('active');
-      overlay.style.display = 'none';
-    });
-  };
+  toggle.addEventListener('click', () => {
+    // === MOBILE ===
+    if (window.innerWidth < 992) {
+      sidebar.classList.toggle('active');
+      overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+      return;
+    }
+
+    // === DESKTOP ===
+    const isClosed = sidebar.classList.contains('closed');
+
+    sidebar.classList.toggle('closed'); // toggle geser sidebar
+
+    document.body.classList.toggle('sidebar-open', isClosed);
+    document.body.classList.toggle('sidebar-closed', !isClosed);
+  });
+
+  // Klik overlay untuk menutup sidebar di mobile
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    overlay.style.display = 'none';
+  });
+});
+document.addEventListener('DOMContentLoaded', () => {s
 
 // Notifikasi: klik item -> tandai dibaca via AJAX
   const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');

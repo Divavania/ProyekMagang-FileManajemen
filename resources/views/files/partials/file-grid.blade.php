@@ -142,5 +142,16 @@
   transform: scale(1.1);
 }
 
+.file-card .dropdown {
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.2s ease;
+}
+
+/* saat card di-hover: tampilkan */
+.file-card:hover .dropdown {
+    opacity: 1;
+    visibility: visible;
+}
 
 </style>
