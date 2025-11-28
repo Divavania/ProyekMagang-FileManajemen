@@ -10,7 +10,7 @@ use App\Models\Folder;
 
 class TrashController extends Controller
 {
-    // 🗑️ Tampilkan file yang sudah dihapus (soft delete)
+    // Tampilkan file yang sudah dihapus (soft delete)
     public function index()
     {
         $trashedFiles = File::onlyTrashed()
@@ -26,7 +26,7 @@ class TrashController extends Controller
         return view('trash.index', compact('trashedFiles', 'trashedFolders'));
     }
 
-    // 🔄 Pulihkan file dari sampah
+    // Pulihkan file dari sampah
     public function restore($id)
     {
         $file = File::onlyTrashed()
@@ -39,7 +39,7 @@ class TrashController extends Controller
         return redirect()->route('trash.index')->with('success', 'File berhasil dipulihkan.');
     }
 
-    // ❌ Hapus permanen file
+    // Hapus permanen file
     public function forceDelete($id)
     {
         $file = File::onlyTrashed()
@@ -57,7 +57,7 @@ class TrashController extends Controller
         return redirect()->route('trash.index')->with('success', 'File berhasil dihapus permanen.');
     }
 
-    // 🔄 Pulihkan semua file dari sampah
+    // Pulihkan semua file dari sampah
     public function restoreAll()
     {
         $files = File::onlyTrashed()->where('uploaded_by', Auth::id())->get();
@@ -73,7 +73,7 @@ class TrashController extends Controller
         return redirect()->route('trash.index')->with('success', 'Semua file berhasil dipulihkan.');
     }
 
-    // 🧹 Hapus permanen semua file di sampah
+    // Hapus permanen semua file di sampah
     public function empty()
     {
         $files = File::onlyTrashed()->where('uploaded_by', Auth::id())->get();
@@ -92,7 +92,7 @@ class TrashController extends Controller
         return redirect()->route('trash.index')->with('success', 'Semua file di sampah telah dihapus permanen.');
     }
 
-    // 🔄 Pulihkan folder
+    // Pulihkan folder
     public function restoreFolder($id)
     {
         $folder = Folder::onlyTrashed()
@@ -119,7 +119,7 @@ class TrashController extends Controller
         }
     }
 
-    // ❌ Hapus permanen folder
+    // Hapus permanen folder
     public function forceDeleteFolder($id)
     {
         $folder = Folder::onlyTrashed()

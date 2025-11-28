@@ -40,13 +40,16 @@ class FolderController extends Controller
             'parent_id' => 'nullable|exists:folders,id',
         ]);
 
-        Folder::create([
+        $folder = Folder::create([
             'name' => $request->name,
             'parent_id' => $request->parent_id,
             'created_by' => auth()->id(),
         ]);
 
-        logActivity('create_folder', 'Membuat folder: ' . $folder->name);
+       logActivity(
+            "Membuat Folder",
+            "Membuat folder {$folder->name}"
+        );
 
         return back()->with('success', 'Folder created successfully.');
     }
@@ -126,9 +129,14 @@ class FolderController extends Controller
             ->where('created_by', Auth::id())
             ->firstOrFail();
 
-        $folder->update(['name' => $request->name]);
+        $oldName = $folder->name;
 
-        logActivity('update_folder', "Mengubah nama folder dari '$oldName' menjadi '$folder->name'");
+         $folder->update(['name' => $request->name]);
+
+       logActivity(
+        "Memperbarui Folder",
+        "Mengubah nama folder dari {$oldName} menjadi {$folder->name}"
+    );
 
         // Redirect sesuai kondisi
         if ($folder->parent_id) {
@@ -168,7 +176,12 @@ class FolderController extends Controller
 
         $this->deleteFolderRecursive($folder);
 
-        logActivity('delete_folder', 'Menghapus folder ke trash: ' . $name);
+        $folderName = $folder->name;
+
+         logActivity(
+        "Menghapus Folder",
+        "Menghapus folder {$folderName} ke sampah"
+    );
 
         return redirect()->route('trash.folders')
             ->with('success', 'Folder berhasil dipindahkan ke sampah.');

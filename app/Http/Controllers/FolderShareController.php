@@ -32,7 +32,8 @@ class FolderShareController extends Controller
 
         $allShared = $allShared->values();
 
-        logActivity('view_shared_folders', 'Melihat halaman folder yang dibagikan');
+         // LOG ACTIVITY
+        logActivity("Melihat Folder Dibagikan", "User melihat daftar folder yang dibagikan.");
 
         return view('shared.folders', compact('shared_by', 'shared_with', 'allShared', 'sort'));
     }
@@ -65,7 +66,11 @@ class FolderShareController extends Controller
             $count++;
         }
 
-        logActivity('share_folder', "Membagikan folder {$folder->name} ke {$count} pengguna");
+        // LOG ACTIVITY 
+        logActivity(
+            "Share Folder",
+            "Membagikan folder {$folder->name} ke {$count} pengguna"
+        );
 
         return back()->with('success', "Folder berhasil dibagikan ke {$count} pengguna.");
     }
@@ -80,7 +85,11 @@ class FolderShareController extends Controller
 
         $share->delete();
 
-        logActivity('remove_folder_share', "Menghapus akses share folder: {$folderName}");
+        // LOG ACTIVITY 
+        logActivity(
+            "Hapus Share Folder",
+            "Menghapus akses folder yang dibagikan: {$folderName}"
+        );
 
         return back()->with('success', 'Akses folder dibagikan berhasil dihapus.');
     }

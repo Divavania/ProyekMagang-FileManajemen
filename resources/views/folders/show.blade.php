@@ -18,41 +18,64 @@
     @include('folders._folder_cards', ['folders' => $subfolders, 'allFolders' => $allFolders])
 
     {{-- Files --}}
-    <h5>📄 Files</h5>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>File Name</th>
-                    <th>Type</th>
-                    <th>Uploaded</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($files as $file)
-                <tr>
-                    <td>{{ $file->file_name }}</td>
-                    <td>{{ $file->file_type }}</td>
-                    <td>{{ $file->created_at->format('d M Y') }}</td>
-                    <td class="d-flex gap-1 flex-wrap">
-                        <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">Open</a>
-                        <a href="{{ route('files.download', $file->id) }}" class="btn btn-sm btn-outline-success">Download</a>
-                        <form action="{{ route('files.destroy', $file->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus file ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" class="text-center text-muted py-3">No files in this folder.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <h5 class="mt-4 mb-3 d-flex align-items-center">
+  <i class="bi bi-file-earmark text-primary me-2"></i> Files
+</h5>
+
+<div class="row g-3">
+  @foreach ($files as $file)
+    @php
+      $ext = strtolower(pathinfo($file->file_name, PATHINFO_EXTENSION));
+      $fileUrl = asset('storage/' . $file->file_path);
+    @endphp
+
+    <div class="col-6 col-sm-4 col-md-3">
+      <div class="card h-100 shadow-sm border-0 rounded file-card position-relative">
+
+        <div class="dropdown position-absolute end-0 mt-1 me-1">
+           <button class="btn btn-sm btn-light p-1 rounded-circle" type="button" data-bs-toggle="dropdown">
+      <i class="bi bi-three-dots-vertical"></i>
+    </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{{ $fileUrl }}" target="_blank">Open</a></li>
+            <li><a class="dropdown-item" download href="{{ $fileUrl }}">Download</a></li>
+            <li>
+              <form action="{{ route('files.destroy', $file->id) }}" method="POST">
+                @csrf @method('DELETE')
+                <button class="dropdown-item text-danger" onclick="return confirm('Delete this file?')">
+                  Delete
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-body text-center">
+
+  @php
+    $ext = strtolower(pathinfo($file->file_name, PATHINFO_EXTENSION));
+    $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']);
+  @endphp
+
+  @if ($isImage)
+  <img src="{{ $fileUrl }}"
+       class="img-fluid rounded preview-image"
+       data-image="{{ $fileUrl }}"
+       style="height: 100px; object-fit: cover; width: 100%; cursor:pointer;">
+@else
+  <i class="bi bi-file-earmark-text text-primary" style="font-size: 45px"></i>
+@endif
+
+
+  <p class="mt-2 fw-semibold text-truncate">{{ $file->file_name }}</p>
+  <small class="text-muted">{{ $file->created_at->diffForHumans() }}</small>
+</div>
+
+
+      </div>
     </div>
+  @endforeach
+</div>
 </div>
 
 {{-- Modal Add Folder --}}
@@ -97,4 +120,26 @@
         </form>
     </div>
 </div>
+
+<!-- Modal Preview Image -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark text-center">
+            <img id="previewModalImage" class="img-fluid rounded" src="">
+        </div>
+    </div>
+</div>
+
 @endsection
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".preview-image").forEach(img => {
+        img.addEventListener("click", function () {
+            const src = this.getAttribute("data-image");
+            document.getElementById("previewModalImage").src = src;
+            new bootstrap.Modal(document.getElementById("previewModal")).show();
+        });
+    });
+});
+</script>

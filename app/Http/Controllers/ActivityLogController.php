@@ -10,18 +10,21 @@ class ActivityLogController extends Controller
 {
     public function index(Request $request)
     {
-        // Batasi akses untuk SUPERADMIN saja
+        // Hanya superadmin yang boleh mengakses
         if (!auth()->check() || auth()->user()->role !== 'superadmin') {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
-        // Ambil list user untuk filter
+        // Auto delete log lebih dari 15 hari
+        ActivityLog::where('created_at', '<', now()->subDays(15))->delete();
+
+        // Ambil list user untuk dropdown filter
         $userList = User::orderBy('name')->get(['id', 'name']);
 
-        // Query log
+        // Base query
         $query = ActivityLog::with('user')->orderBy('created_at', 'desc');
 
-        // Filter search
+        // Filter pencarian (search)
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('action', 'like', '%' . $request->search . '%')

@@ -30,7 +30,7 @@
       <button type="submit" class="btn btn-primary px-3"><i class="bi bi-search me-1"></i>Cari</button>
     </form>
 
-    <div class="d-flex align-items-center gap-2">
+   <div class="d-flex align-items-center gap-2 toolbar-actions">
       <button id="toggleSelectMode" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-check2-square me-1"></i>Pilih File
       </button>
@@ -93,6 +93,12 @@
 #listView > div.d-flex:hover {
   background-color: #f8f9fa;
 }
+
+.toolbar-actions {
+  min-height: 38px; /* tinggi minimal agar tidak turun */
+  display: flex;
+  align-items: center;
+}
 </style>
 
 {{-- === SCRIPT === --}}
@@ -122,7 +128,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // === Toggle Select Mode ===
   // Toggle mode pilih file
 toggleSelectBtn.addEventListener('click', () => {
   const checkboxes = document.querySelectorAll('.select-checkbox');
@@ -133,7 +138,7 @@ toggleSelectBtn.addEventListener('click', () => {
 
   // Ubah label tombol agar jelas
   if (show) {
-    toggleSelectBtn.innerHTML = '<i class="bi bi-x-circle me-1"></i>Batal Pilih';
+    toggleSelectBtn.innerHTML = '<i class="bi bi-x-circle me-1"></i>Batal';
   } else {
     toggleSelectBtn.innerHTML = '<i class="bi bi-check2-square me-1"></i>Pilih File';
   }

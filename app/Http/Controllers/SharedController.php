@@ -95,7 +95,11 @@ class SharedController extends Controller
             $sharedCount++;
         }
 
-        logActivity('share_file', "Membagikan file {$file->file_name} ke {$sharedCount} pengguna");
+        // LOG ACTIVITY
+          logActivity(
+            "Membagikan File",
+            "Membagikan file {$file->file_name} ke {$sharedCount} pengguna dengan permission '{$request->permission}'"
+        );
 
         return back()->with('success', "File berhasil dibagikan ke {$sharedCount} pengguna!");
     }
@@ -111,7 +115,10 @@ class SharedController extends Controller
 
         $share->delete(); // hanya delete di DB, file aman
 
-        logActivity('remove_file_share', "Menghapus akses share file: {$share->file->file_name}");
+        // LOG ACTIVITY
+        
+        $fileName = $share->file ? $share->file->file_name : 'Unknown File';
+        logActivity("Menghapus Share File", "Menghapus akses share file: {$fileName}");
 
         return back()->with('success', 'Akses file dibagikan berhasil dihapus.');
     }

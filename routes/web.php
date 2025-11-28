@@ -92,7 +92,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
         Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.updatePhoto');
         Route::delete('/profile/delete-photo', [ProfileController::class, 'deletePhoto'])->name('profile.deletePhoto');
-    });
+    
 
     //Folders
         Route::get('/folders', [FolderController::class, 'index'])->name('folders.index');
@@ -117,6 +117,7 @@ Route::middleware('auth')->group(function () {
         // Files
         Route::get('/files', [FileController::class, 'index'])->name('files.index');
         Route::get('/files/download/{id}', [FileController::class, 'download'])->name('files.download');
+        Route::delete('/files/bulk-delete', [FileController::class, 'bulkDelete'])->name('files.bulkDelete');
         Route::put('/files/{id}', [FileController::class, 'update'])->name('files.update');
         Route::delete('/files/{id}', [FileController::class, 'destroy'])->name('files.destroy');
 
@@ -183,9 +184,14 @@ Route::middleware('auth')->group(function () {
 
          //ACTIVITY LOG 
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])
-    ->name('activity.logs')
-    ->middleware('auth');
-
+        ->name('activity.logs')
+        ->middleware('auth');
+        //Auto delete 
+        Route::delete('/activity-log/delete/{id}', 
+        [ActivityLogController::class, 'destroy'])
+        ->name('activity.log.delete')
+        ->middleware('auth');
+});
     
         
 

@@ -85,6 +85,12 @@ class UserController extends Controller
             $user->save();
         }
 
+        // LOG ACTIVITY
+          logActivity(
+            "Tambah User",
+            "Admin menambah user baru: {$user->name} ({$user->email}) dengan role {$user->role}"
+        );
+
         return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan!');
     }
 
@@ -128,6 +134,14 @@ class UserController extends Controller
 
         $user->save();
 
+        // LOG ACTIVITY
+        $oldName = $user->getOriginal('name');
+        $oldEmail = $user->getOriginal('email');
+        logActivity(
+            "Update User",
+            "Mengubah data user dari {$oldName} ({$oldEmail}) menjadi {$user->name} ({$user->email})"
+        );
+
         return redirect()->route('users.index')->with('success', 'User berhasil diupdate!');
     }
 
@@ -143,6 +157,12 @@ class UserController extends Controller
         }
 
         $user->delete();
+
+        // LOG ACTIVITY
+          logActivity(
+            "Hapus User",
+            "Menghapus user: {$name} ({$email})"
+        );
 
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus!');
     }

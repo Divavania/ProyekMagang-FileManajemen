@@ -50,7 +50,15 @@
 
             </form>
 
+             <!-- INFORMASI AUTO DELETE -->
+    <div class="alert alert-info mb-3" style="padding: 8px 12px; font-size: 14px;">
+    <i class="bi bi-info-circle me-2"></i>
+    Log aktivitas akan disimpan selama <strong>15 hari</strong> dan akan terhapus otomatis.
+</div>
+
+
             <!-- TABLE -->
+             
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">

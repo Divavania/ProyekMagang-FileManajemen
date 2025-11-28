@@ -2,21 +2,46 @@
 use App\Models\Folder;
 use Illuminate\Support\Facades\Auth;
 
-// fallback: jika parent view tidak mengirim $allFolders, ambil semua folder milik user login
 $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth::id())->get();
 @endphp
 
-<div class="row g-3 mb-4">
-  @forelse ($folders as $folder)
-    <div class="col-lg-3 col-md-4 col-sm-6">
-      <div class="card shadow-sm border-0 folder-card p-3 h-100 position-relative">
+<style>
+  .folder-card-grid {
+    border-radius: 12px;
+    transition: .2s;
+    cursor: pointer;
+    text-align: center;
+  }
+  .folder-card-grid:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,.1);
+  }
+  .folder-icon {
+    font-size: 48px;
+    color: #fbbf24; /* warna folder */
+  }
+  .folder-name {
+    font-weight: 600;
+    font-size: 15px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
 
-        {{-- Dropdown aksi --}}
+<div class="row g-3 mb-4">
+
+  @forelse ($folders as $folder)
+    <div class="col-6 col-sm-4 col-md-3">
+      <div class="card shadow-sm border-0 folder-card-grid p-3 h-100 position-relative">
+
+        {{-- Dropdown --}}
         <div class="position-absolute top-0 end-0 m-2" style="z-index:10;">
           <div class="dropdown">
-            <button class="btn btn-sm btn-light p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
+             <button class="btn btn-sm btn-light p-1 rounded-circle" type="button" data-bs-toggle="dropdown">
+      <i class="bi bi-three-dots-vertical"></i>
+    </button>
 
             <ul class="dropdown-menu dropdown-menu-end">
               <li>
@@ -26,8 +51,6 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
                   <i class="bi bi-pencil me-2"></i>Ubah Nama
                 </button>
               </li>
-
-              {{-- Pindahkan --}}
               <li>
                 <button type="button" class="dropdown-item"
                         data-bs-toggle="modal"
@@ -35,16 +58,13 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
                   <i class="bi bi-folder-symlink me-2"></i>Pindahkan
                 </button>
               </li>
-
-              {{-- Berbagi Folder --}}
               <li>
-                  <button type="button" class="dropdown-item"
-                          data-bs-toggle="modal"
-                          data-bs-target="#shareFolderModal{{ $folder->id }}">
-                      <i class="bi bi-share me-2"></i>Bagikan
-                  </button>
+                <button type="button" class="dropdown-item"
+                        data-bs-toggle="modal"
+                        data-bs-target="#shareFolderModal{{ $folder->id }}">
+                  <i class="bi bi-share me-2"></i>Bagikan
+                </button>
               </li>
-
               <li>
                 <button type="button"
                         class="dropdown-item toggle-favorite-folder"
@@ -60,9 +80,8 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
 
               <li>
                 <form action="{{ route('folders.destroy', $folder->id) }}" method="POST"
-                      onsubmit="return confirm('Yakin ingin menghapus folder ini? Semua file dan subfolder juga akan terhapus!')">
-                  @csrf
-                  @method('DELETE')
+                      onsubmit="return confirm('Yakin ingin menghapus folder ini? Semua file & subfolder juga terhapus!')">
+                  @csrf @method('DELETE')
                   <button type="submit" class="dropdown-item text-danger">
                     <i class="bi bi-trash me-2"></i>Hapus
                   </button>
@@ -72,24 +91,31 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
           </div>
         </div>
 
-        {{-- Link ke folder --}}
-        <a href="{{ route('folders.show', $folder->id) }}" class="stretched-link text-decoration-none text-dark fw-bold">📁 {{ $folder->name }}</a>
-        <p class="text-muted small mt-2 mb-0">Created: {{ $folder->created_at->format('d M Y') }}</p>
+        {{-- LINK folder --}}
+        <a href="{{ route('folders.show', $folder->id) }}" class="stretched-link"></a>
+
+        {{-- Icon --}}
+        <div class="folder-icon mb-2">📁</div>
+
+        {{-- Nama --}}
+        <span class="folder-name">{{ $folder->name }}</span>
+
+        <p class="text-muted small mb-0">Created: {{ $folder->created_at->format('d M Y') }}</p>
+
       </div>
 
-      {{-- Include modals (kirim $allFolders yang sudah pasti ada) --}}
       @include('folders._modals', ['folder' => $folder, 'allFolders' => $allFolders])
-
     </div>
+
   @empty
     <div class="col-12 text-muted">No folders.</div>
   @endforelse
+
 </div>
 
 <script>
   document.querySelectorAll('.toggle-favorite-folder').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const folderId = btn.dataset.id;
       const url = btn.dataset.url;
 
       try {
@@ -104,24 +130,20 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
         const data = await res.json();
 
         if (data.status === 'ok') {
-          // update icon
           if (data.favorited) {
             btn.innerHTML = `<i class="bi bi-star-fill text-warning me-2"></i>Hapus dari Favorit`;
           } else {
             btn.innerHTML = `<i class="bi bi-star me-2"></i>Tambah ke Favorit`;
-
-            // Jika berada di halaman /favorites → hapus card dari DOM
-            const isFavoritesPage = window.location.pathname.includes('/favorites');
-            if (isFavoritesPage) {
-              const card = btn.closest('.col-lg-3') || btn.closest('.folder-card');
+            if (window.location.pathname.includes('/favorites')) {
+              const card = btn.closest('.col-6') || btn.closest('.folder-card-grid');
               if (card) card.remove();
             }
           }
         }
       } catch (err) {
         console.error(err);
-        Swal.fire('Error', 'Gagal terhubung ke server.', 'error');
       }
     });
   });
 </script>
+

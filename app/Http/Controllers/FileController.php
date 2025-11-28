@@ -51,15 +51,17 @@ class FileController extends Controller
 
         $files = $query->get();
         $users = User::all();
-        $folders = Folder::all(); // ✨ pastikan tersedia di view
+        $folders = Folder::where('created_by', Auth::id())->get();
 
-        return view('files.index', compact('files', 'users', 'folders'));
+         $viewMode = $request->input('view', 'grid');
+
+        return view('files.index', compact('files', 'users', 'folders', 'viewMode'));
     }
 
     // Halaman upload file
     public function create()
     {
-        $folders = Folder::all();
+        $folders = Folder::where('created_by', Auth::id())->get();
         return view('files.upload', compact('folders'));
     }
 
@@ -103,24 +105,30 @@ class FileController extends Controller
         return redirect()->route('files.index')->with('success', 'File berhasil dihapus.');
     }
 
-    // Bulk delete
+    // Bulk delete file
+
     public function bulkDelete(Request $request)
     {
         $ids = $request->input('selected_files', []);
-        if (!empty($ids)) {
-            $files = File::whereIn('id', $ids)->where('uploaded_by', Auth::id())->get();
-            foreach ($files as $f) {
-                if ($f->file_path && Storage::disk('public')->exists($f->file_path)) {
-                    Storage::disk('public')->delete($f->file_path);
-                }
-            }
 
-            logActivity("Menghapus beberapa file: " . implode(', ', $files->pluck('file_name')->toArray()));
-
-            File::whereIn('id', $ids)->where('uploaded_by', Auth::id())->delete();
-            return redirect()->route('files.index')->with('success', 'File terpilih berhasil dihapus.');
+        if (empty($ids)) {
+            return redirect()->route('files.index')
+                ->with('error', 'Tidak ada file yang dipilih.');
         }
-        return redirect()->route('files.index')->with('error', 'Tidak ada file yang dipilih.');
+
+        // Ambil semua file milik user
+        $files = File::whereIn('id', $ids)
+            ->where('uploaded_by', Auth::id())
+            ->get();
+
+        foreach ($files as $file) {
+            $file->delete(); // Soft delete — masuk ke menu Sampah
+        }
+
+        logActivity("Memindahkan ke sampah beberapa file: " . implode(', ', $files->pluck('file_name')->toArray()));
+
+        return redirect()->route('files.index')
+            ->with('success', 'File terpilih berhasil dipindahkan ke sampah.');
     }
 
     // Update nama file
@@ -192,20 +200,23 @@ class FileController extends Controller
         'folder_id' => 'required|exists:folders,id'
     ]);
 
-    $file = File::findOrFail($id);
+    $file = File::where('id', $id)
+                ->where('uploaded_by', Auth::id())
+                ->firstOrFail();
 
-    $targetFolder = Folder::findOrFail($request->folder_id);
-    
-    logActivity(
-        "Memindahkan File",
-        "File {$file->file_name} dipindahkan ke folder {$targetFolder->name}"
-    );
+    // Pastikan folder milik user
+    $folder = Folder::where('id', $request->folder_id)
+                    ->where('created_by', Auth::id())
+                    ->firstOrFail();
 
-    $file->folder_id = $request->folder_id;
+    logActivity("Memindahkan File", "Memindahkan file {$file->file_name} ke folder {$folder->folder_name}");
+
+    $file->folder_id = $folder->id;
     $file->save();
 
-    return redirect()->back()->with('success', 'File berhasil dipindahkan!');
+    return back()->with('success', 'File berhasil dipindahkan.');
 }
+
 //Share Link File
     public function shareLink($id)
 {

@@ -67,25 +67,6 @@
     </div>
   </div>
 </div>
-        <div class="modal-footer border-0 justify-content-between">
-          <small class="text-light opacity-75">
-            Diupload: {{ $file->created_at->format('d M Y, H:i') }}
-          </small>
-          <a href="{{ route('files.download', $file->id) }}" class="btn btn-outline-light btn-sm">
-            <i class="bi bi-download me-1"></i>Unduh
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-{{-- Checkbox Pilih File --}}
-{{-- 
-<div class="form-check mb-2">
-  <input class="form-check-input select-file-checkbox" type="checkbox" name="selected_files[]" value="{{ $file->id }}" id="selectFile{{ $file->id }}">
-  <label class="form-check-label" for="selectFile{{ $file->id }}">{{ $file->file_name }}</label>
-</div>
---}}
 
   {{-- Share Modal --}}
   <div class="modal fade" id="shareFileModal{{ $file->id }}" tabindex="-1">

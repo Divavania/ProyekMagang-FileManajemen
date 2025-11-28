@@ -10,7 +10,7 @@ use App\Models\Folder;
 
 class FavoriteController extends Controller
 {
-    // 🔸 Toggle File
+    // Toggle File
     public function toggleFile($id)
     {
         $user = Auth::user();
@@ -30,7 +30,7 @@ class FavoriteController extends Controller
         }
     }
 
-    // 🔸 Toggle Folder
+    // Toggle Folder
     public function toggleFolder($id)
     {
         $user = Auth::user();
@@ -50,7 +50,7 @@ class FavoriteController extends Controller
         }
     }
 
-    // 🔸 Halaman Favorit
+    // Halaman Favorit
     public function index()
     {
         $user = Auth::user();
