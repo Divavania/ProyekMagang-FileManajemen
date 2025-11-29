@@ -13,13 +13,13 @@
              placeholder="Search folders..." value="{{ request('search') }}">
     </div>
     <div class="col-md-2 col-lg-2">
-      <button class="btn btn-primary w-100">Search</button>
+      <button class="btn btn-primary w-100">Cari</button>
     </div>
   </form>
 
   <!-- Folder Section -->
   <h5 class="mb-3 d-flex align-items-center">
-    <i class="bi bi-folder-fill text-warning me-2"></i> All Folders
+    <i class="bi bi-folder-fill text-warning me-2"></i> Semua Folder
   </h5>
 
   <div class="row g-3">

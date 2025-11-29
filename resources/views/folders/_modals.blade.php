@@ -24,15 +24,15 @@ $invalidFolderIds = array_merge([$folder->id], $getSubfolderIds($folder));
       @csrf
       @method('PUT')
       <div class="modal-header">
-        <h5 class="modal-title">Rename Folder</h5>
+        <h5 class="modal-title">Ganti Nama Folder</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <input type="text" name="name" class="form-control" value="{{ $folder->name }}" required>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
       </div>
     </form>
   </div>
@@ -45,7 +45,7 @@ $invalidFolderIds = array_merge([$folder->id], $getSubfolderIds($folder));
       @csrf
       <input type="hidden" name="folder_id" value="{{ $folder->id }}">
       <div class="modal-header">
-        <h5 class="modal-title">Move Folder</h5>
+        <h5 class="modal-title">Pindahkan Folder</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
@@ -63,8 +63,8 @@ $invalidFolderIds = array_merge([$folder->id], $getSubfolderIds($folder));
         <small class="text-muted d-block mt-2">Pindahkan folder ini ke folder tujuan. Pilih "Root" untuk meletakkan di level atas.</small>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary">Move</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-primary">Pindahkan</button>
       </div>
     </form>
   </div>

@@ -7,30 +7,40 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
 
 <style>
   .folder-card-grid {
-      border-radius: 12px;
-      transition: .2s;
-      cursor: pointer;
-      text-align: center;
-      overflow: visible; /* Penting! biar dropdown keluar card */
-      position: relative; /* biar dropdown absolute relatif ke card */
+    border-radius: 12px;
+    transition: .2s;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
   }
-  .folder-card-grid .dropdown-menu {
-      z-index: 1050; /* pastikan muncul di atas semua */
-  }
-  .folder-card-grid .stretched-link {
-      pointer-events: none; /* biar dropdown clickable */
+  .folder-card-grid:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,.1);
+    z-index: 5; /* Tambahkan ini agar saat hover, card naik di atas yang lain */
   }
   .folder-icon {
-      font-size: 48px;
-      color: #fbbf24;
+    font-size: 48px;
+    color: #fbbf24; /* warna folder */
   }
   .folder-name {
-      font-weight: 600;
-      font-size: 15px;
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    font-weight: 600;
+    font-size: 15px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* Pastikan dropdown menu punya z-index tinggi */
+  .dropdown-menu {
+    z-index: 1050 !important;
+  }
+  /* Container dropdown juga perlu z-index lebih tinggi */
+  .folder-card-grid .dropdown {
+    z-index: 100;
+  }
+  /* Saat dropdown terbuka, card parent harus di atas */
+  .folder-card-grid:has(.dropdown-menu.show) {
+    z-index: 1000 !important;
   }
 </style>
 
@@ -38,14 +48,14 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
 
   @forelse ($folders as $folder)
     <div class="col-6 col-sm-4 col-md-3">
-      <div class="card shadow-sm border-0 folder-card-grid p-3 h-100 position-relative">
+      <div class="card shadow-sm border-0 folder-card-grid p-3 h-100">
 
         {{-- Dropdown --}}
-        <div class="position-absolute top-0 end-0 m-2">
+        <div class="position-absolute top-0 end-0 m-2" style="z-index:100;">
           <div class="dropdown">
-             <button class="btn btn-sm btn-light p-1 rounded-circle" type="button" data-bs-toggle="dropdown">
-      <i class="bi bi-three-dots-vertical"></i>
-    </button>
+            <button class="btn btn-sm btn-light p-1 rounded-circle" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
 
             <ul class="dropdown-menu dropdown-menu-end">
               <li>
@@ -104,7 +114,7 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
         {{-- Nama --}}
         <span class="folder-name">{{ $folder->name }}</span>
 
-        <p class="text-muted small mb-0">Created: {{ $folder->created_at->format('d M Y') }}</p>
+        <p class="text-muted small mb-0">Dibuat: {{ $folder->created_at->format('d M Y') }}</p>
 
       </div>
 
@@ -112,7 +122,7 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
     </div>
 
   @empty
-    <div class="col-12 text-muted">No folders.</div>
+    <div class="col-12 text-muted">Tidak Ada Folder</div>
   @endforelse
 
 </div>

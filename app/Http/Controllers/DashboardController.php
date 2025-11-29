@@ -15,7 +15,7 @@ class DashboardController extends Controller
         $userId = Auth::id(); // ambil ID user yang sedang login
 
         // Query file dengan filter pencarian + user login
-       $query = File::with('uploader')->where('uploaded_by', $userId);
+        $query = File::with('uploader')->where('uploaded_by', $userId);
 
         if ($request->keyword) {
             $query->where('file_name', 'like', '%' . $request->keyword . '%');
@@ -27,10 +27,16 @@ class DashboardController extends Controller
 
         $files = $query->latest()->get();
 
-        // Folder hanya yang dibuat oleh user ini
+        // Folder hanya 8 terbaru yang dibuat oleh user ini
         $folders = Folder::where('created_by', $userId)
             ->whereNull('parent_id') // hanya folder induk
             ->latest()
+            ->limit(8) // Ambil hanya 8 folder terbaru
+            ->get();
+
+        // Ambil semua folder untuk dropdown (pindahkan folder, dll)
+        $allFolders = Folder::with('children')
+            ->where('created_by', $userId)
             ->get();
 
         // Uploader list tetap bisa semua user (misal untuk admin)
@@ -54,7 +60,6 @@ class DashboardController extends Controller
             ->whereIn('file_type', $videoExtensions)
             ->count();
 
-        
         $totalAudios = File::where('uploaded_by', $userId)
             ->whereIn('file_type', $audioExtensions)
             ->count();
@@ -62,13 +67,12 @@ class DashboardController extends Controller
         return view('dashboard', compact(
             'files',
             'folders',
+            'allFolders', // Tambahkan ini
             'uploaders',
             'totalDocuments',
             'totalImages',
             'totalVideos',
             'totalAudios'
         ));
-        
     }
-
 }
