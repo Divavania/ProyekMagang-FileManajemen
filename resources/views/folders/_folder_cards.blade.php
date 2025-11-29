@@ -7,26 +7,30 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
 
 <style>
   .folder-card-grid {
-    border-radius: 12px;
-    transition: .2s;
-    cursor: pointer;
-    text-align: center;
+      border-radius: 12px;
+      transition: .2s;
+      cursor: pointer;
+      text-align: center;
+      overflow: visible; /* Penting! biar dropdown keluar card */
+      position: relative; /* biar dropdown absolute relatif ke card */
   }
-  .folder-card-grid:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0,0,0,.1);
+  .folder-card-grid .dropdown-menu {
+      z-index: 1050; /* pastikan muncul di atas semua */
+  }
+  .folder-card-grid .stretched-link {
+      pointer-events: none; /* biar dropdown clickable */
   }
   .folder-icon {
-    font-size: 48px;
-    color: #fbbf24; /* warna folder */
+      font-size: 48px;
+      color: #fbbf24;
   }
   .folder-name {
-    font-weight: 600;
-    font-size: 15px;
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+      font-weight: 600;
+      font-size: 15px;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
   }
 </style>
 
@@ -37,7 +41,7 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
       <div class="card shadow-sm border-0 folder-card-grid p-3 h-100 position-relative">
 
         {{-- Dropdown --}}
-        <div class="position-absolute top-0 end-0 m-2" style="z-index:10;">
+        <div class="position-absolute top-0 end-0 m-2">
           <div class="dropdown">
              <button class="btn btn-sm btn-light p-1 rounded-circle" type="button" data-bs-toggle="dropdown">
       <i class="bi bi-three-dots-vertical"></i>
@@ -146,4 +150,3 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
     });
   });
 </script>
-
