@@ -43,6 +43,18 @@
     </div>
   </div>
 
+  @if(session('success'))
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: '{{ session('success') }}',
+            timer: 1800,
+            showConfirmButton: false
+        });
+    </script>
+    @endif
+
     {{-- === File Container === --}}
 
     <div id="fileContainer" class="position-relative">

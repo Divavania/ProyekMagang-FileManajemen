@@ -51,7 +51,7 @@ class FolderController extends Controller
             "Membuat folder {$folder->name}"
         );
 
-        return back()->with('success', 'Folder created successfully.');
+        return back()->with('success', 'Folder berhasil dibuat.');
     }
 
     // Menampilkan isi folder
