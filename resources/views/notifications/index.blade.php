@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', 'Notifications')
-@section('page_title', 'All Notifications')
+@section('page_title', 'Notifikasi')
 
 @section('content')
 <div class="container mt-4">
@@ -10,7 +10,6 @@
   @endphp
 
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-semibold">Notifikasi</h4>
     <div class="d-flex align-items-center gap-2">
       @if($unreadCount > 0)
         <form method="POST" action="{{ route('notifications.markAllRead') }}">
