@@ -156,12 +156,15 @@ class UserController extends Controller
             Storage::disk('public')->delete($user->photo);
         }
 
+        $oldName = $user->name;
+        $oldEmail = $user->email;
+
         $user->delete();
 
         // LOG ACTIVITY
           logActivity(
             "Hapus User",
-            "Menghapus user: {$name} ({$email})"
+            " Menghapus user: {$user->name} ({$user->email}) "
         );
 
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus!');
