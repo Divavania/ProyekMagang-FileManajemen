@@ -61,11 +61,13 @@
         </button>
       </li>
 
+       <li><hr class="dropdown-divider"></li>
+
       <li>
-        <button type="button" class="dropdown-item text-danger btn-delete"
-                data-id="{{ $file->id }}">
+        <button type="button" class="dropdown-item text-danger btn-delete" data-id="{{ $file->id }}">
           <i class="bi bi-trash me-2"></i>Hapus
         </button>
+      </li>
       </li>
     </ul>
   </div>
@@ -81,7 +83,7 @@
             <i class="bi bi-file-earmark-music fs-1 text-primary"></i>
           </div>
         @elseif(in_array($ext, ['mp4','mov','avi','mkv','webm']))
-          <div class="position-relative bg-dark rounded overflow-hidden" style="height:110px;">
+          <div class="position-relative bg-white rounded overflow-hidden" style="height:110px;">
             <video class="w-100 h-100" style="object-fit:cover;" muted preload="metadata" playsinline
                    onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0;">
               <source src="{{ $fileUrl }}" type="video/mp4">

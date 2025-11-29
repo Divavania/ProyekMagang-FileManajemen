@@ -10,16 +10,23 @@
     {{-- Checkbox --}}
     <input type="checkbox" class="form-check-input select-checkbox d-none me-2" name="selected[]" value="{{ $file->id }}">
 
-    {{-- Thumbnail --}}
-    @if(in_array($ext, ['jpg','jpeg','png','gif','webp']))
-      <img src="{{ $fileUrl }}" class="rounded" style="width:40px;height:40px;object-fit:cover;">
-    @elseif(in_array($ext, ['mp4','mov','avi','mkv']))
-      <i class="bi bi-camera-video text-secondary fs-4"></i>
-    @elseif(in_array($ext, ['mp3','wav','ogg']))
-      <i class="bi bi-music-note text-primary fs-4"></i>
-    @else
-      <i class="bi bi-file-earmark fs-4 text-secondary"></i>
-    @endif
+  {{-- Thumbnail Clickable --}}
+    <div class="cursor-pointer"
+         data-bs-toggle="modal"
+         data-bs-target="#previewModal{{ $file->id }}">
+
+      @if(in_array($ext, ['jpg','jpeg','png','gif','webp']))
+        <img src="{{ $fileUrl }}" class="rounded"
+             style="width:40px;height:40px;object-fit:cover;">
+      @elseif(in_array($ext, ['mp4','mov','avi','mkv']))
+        <i class="bi bi-camera-video text-secondary fs-4"></i>
+      @elseif(in_array($ext, ['mp3','wav','ogg']))
+        <i class="bi bi-music-note text-primary fs-4"></i>
+      @else
+        <i class="bi bi-file-earmark fs-4 text-secondary"></i>
+      @endif
+
+    </div>
 
     {{-- Nama File --}}
     <div class="flex-grow-1 text-truncate">
