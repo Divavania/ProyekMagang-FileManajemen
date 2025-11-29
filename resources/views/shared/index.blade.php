@@ -2,11 +2,24 @@
 @section('title', 'File Dibagikan')
 
 @section('content')
-<div class="container-fluid mt-3">
+<div class="d-flex justify-content-between align-items-center mb-3">
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="mb-0">📂 Semua File Dibagikan</h4>
+  <!-- Navigation Tabs -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link {{ request()->routeIs('shared.index') ? 'active' : '' }}"
+         href="{{ route('shared.index') }}">
+        Semua File Dibagikan
+      </a>
+    </li>
 
+    <li class="nav-item">
+      <a class="nav-link {{ request()->routeIs('shared.public') ? 'active' : '' }}"
+         href="{{ route('shared.public') }}">
+        Semua File Publik
+      </a>
+    </li>
+  </ul>
     <div class="d-flex gap-2">
 
       <!-- Sort -->

@@ -94,15 +94,6 @@
               </div>
 
               <div class="mb-3">
-                  <label>Izin Akses</label>
-                  <select name="permission" class="form-select" required>
-                      <option value="view">Lihat</option>
-                      <option value="edit">Edit</option>
-                      <option value="download">Unduh</option>
-                  </select>
-              </div>
-
-              <div class="mb-3">
                   <label>Pesan (opsional)</label>
                   <textarea name="message" class="form-control" rows="3"></textarea>
               </div>

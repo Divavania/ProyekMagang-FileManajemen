@@ -92,6 +92,35 @@
       </li>
 
       <li>
+          @if(!is_null($file->folder_id))
+              {{-- File berasal dari folder → disabled --}}
+              <button class="dropdown-item" disabled
+                      title="File ini berasal dari folder '{{ $file->folder->name }}'. Ubah status folder untuk mempengaruhi semua file di dalamnya.">
+                  <i class="bi bi-shield-lock me-2"></i>Ubah Status
+              </button>
+          @else
+              {{-- File root → bisa ubah status --}}
+              <form action="{{ route('files.status', $file->id) }}" method="POST">
+                  @csrf
+                  @method('PUT')
+
+                  <input type="hidden" name="status" 
+                        value="{{ $file->status === 'Private' ? 'Public' : 'Private' }}">
+
+                  <button type="submit" class="dropdown-item">
+                      @if($file->status === 'Private')
+                          <i class="bi bi-unlock me-2 text-success"></i>
+                          Jadikan Publik
+                      @else
+                          <i class="bi bi-lock me-2 text-warning"></i>
+                          Jadikan Privat
+                      @endif
+                  </button>
+              </form>
+          @endif
+      </li>
+
+      <li>
         <button type="button"
                 class="dropdown-item toggle-favorite-btn"
                 data-id="{{ $file->id }}">

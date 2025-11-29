@@ -90,15 +90,6 @@ $invalidFolderIds = array_merge([$folder->id], $getSubfolderIds($folder));
         </div>
 
         <div class="mb-3">
-          <label>Izin Akses</label>
-          <select name="permission" class="form-select" required>
-            <option value="view">Lihat</option>
-            <option value="edit">Edit</option>
-            <option value="download">Unduh</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
           <label>Pesan (Opsional)</label>
           <textarea name="message" class="form-control" rows="3" placeholder="Tambahkan pesan..."></textarea>
         </div>

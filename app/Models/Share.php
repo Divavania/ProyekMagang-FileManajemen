@@ -13,7 +13,7 @@ class Share extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'file_id', 'shared_with', 'shared_by', 'permission', 'message'
+        'file_id', 'shared_with', 'shared_by', 'message'
     ];
 
     protected $casts = [

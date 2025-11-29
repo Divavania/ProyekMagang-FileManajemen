@@ -217,7 +217,7 @@
   </a>
 
   <a href="{{ route('shared.index') }}" class="{{ request()->is('shared*') ? 'active' : '' }}">
-    <i class="bi bi-people"></i> Berbagi
+    <i class="bi bi-people"></i> Berbagi & Publik
   </a>
 
   <a href="{{ route('trash.index') }}" class="{{ request()->is('trash*') ? 'active' : '' }}">

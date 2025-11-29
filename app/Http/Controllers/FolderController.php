@@ -15,19 +15,16 @@ class FolderController extends Controller
     // Menampilkan daftar folder induk milik user login atau global
     public function index(Request $request)
     {
-        $folders = Folder::whereNull('parent_id') // hanya folder induk
-            ->where(function ($query) {
-                $query->where('created_by', Auth::id())
-                    ->orWhereNull('created_by'); 
-            })
+        $userId = Auth::id();
+        $folders = Folder::whereNull('parent_id')
+            ->where('created_by', $userId)
             ->when($request->search, function($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
             })
             ->latest()
             ->get();
 
-        // Hanya folder milik user login untuk dropdown move
-        $allFolders = Folder::where('created_by', Auth::id())->get();
+       $allFolders = $folders;
 
         return view('folders.index', compact('folders', 'allFolders')); // <-- kirim ke view
     }
@@ -44,6 +41,7 @@ class FolderController extends Controller
             'name' => $request->name,
             'parent_id' => $request->parent_id,
             'created_by' => auth()->id(),
+            'status' => 'Private'
         ]);
 
        logActivity(
@@ -59,6 +57,9 @@ class FolderController extends Controller
     {
         $folder = Folder::with(['children', 'files'])->findOrFail($id);
 
+        if (!$folder->canAccess(Auth::id())) {
+            abort(403, 'Akses folder ditolak');
+        }
         // Ambil subfolder
         $subfolders = $folder->children()->latest()->get();
         $files = $folder->files()->latest()->get();
@@ -71,16 +72,20 @@ class FolderController extends Controller
     // Tambahkan method helper untuk dashboard
     public function dashboardFolders()
     {
+        $userId = Auth::id();
+
         $folders = Folder::whereNull('parent_id')
-            ->where(function($query){
-                $query->where('created_by', Auth::id())
-                      ->orWhereNull('created_by');
+            ->where(function ($query) use ($userId) {
+                $query->where('created_by', $userId) 
+                    ->orWhere('status', 'Public')
+                    ->orWhereHas('shares', fn($s) =>
+                        $s->where('shared_with', $userId)
+                    );
             })
             ->latest()
             ->get();
 
-        $allFolders = Folder::where('created_by', Auth::id())->get();
-
+        $allFolders = Folder::all();
         return view('dashboard', compact('folders', 'allFolders'));
     }
 
@@ -125,9 +130,9 @@ class FolderController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        $folder = Folder::where('id', $id)
-            ->where('created_by', Auth::id())
-            ->firstOrFail();
+        $folder = Folder::findOrFail($id);
+
+        if (!$folder->canAccess(Auth::id())) abort(403);
 
         $oldName = $folder->name;
 
@@ -320,6 +325,8 @@ class FolderController extends Controller
     {
         $folder = Folder::with(['children', 'files'])->findOrFail($id);
 
+        if (!$folder->canAccess(Auth::id())) abort(403);
+
         // Nama zip (tambah timestamp agar unik)
         $zipName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $folder->name) . '_' . time() . '.zip';
         $tmpDir = storage_path('app/tmp');
@@ -353,15 +360,53 @@ class FolderController extends Controller
 
         // Tambahkan file di folder ini
         foreach ($folder->files as $file) {
-            $storagePath = storage_path('app/public/' . $file->file_path);
-            if (file_exists($storagePath)) {
-                $zip->addFile($storagePath, $currentPath . '/' . $file->file_name);
-            }
+            if (!$file->canAccess(Auth::id())) continue;
+            $zip->addFile(
+                storage_path("app/public/{$file->file_path}"),
+                "$currentPath/{$file->file_name}"
+            );
         }
 
         // Rekursif ke subfolder
         foreach ($folder->children as $child) {
             $this->addFolderToZip($child, $zip, $currentPath);
         }
+        
+    }
+
+    public function updateFolderStatus(Request $request, $id)
+    {
+        $folder = Folder::findOrFail($id);
+
+        if ($folder->created_by != Auth::id()) abort(403);
+
+        $newStatus = $request->status ?? ($folder->status === 'Private' ? 'Public' : 'Private');
+
+        \DB::transaction(function () use ($folder, $newStatus) {
+            $folder->update(['status' => $newStatus]);
+
+            $files = $this->collectAllFiles($folder);
+
+            foreach ($files as $file) {
+                $file->update(['status' => $newStatus]);
+
+                if ($newStatus === 'Public') {
+                    $file->shares()->delete();
+                }
+            }
+        });
+
+        return back()->with('success', "Folder berhasil diperbarui menjadi {$newStatus}");
+    }
+
+    private function collectAllFiles(Folder $folder)
+    {
+        $files = $folder->files()->get();
+
+        foreach ($folder->children as $child) {
+            $files = $files->merge($this->collectAllFiles($child));
+        }
+
+        return $files;
     }
 }

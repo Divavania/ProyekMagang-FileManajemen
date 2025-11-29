@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Notifications\FileSharedNotification;
+use App\Notifications\SharedNotification;
 use App\Models\User;
 use App\Models\File;
 use App\Models\Folder;
@@ -16,7 +16,10 @@ class FileController extends Controller
     // Halaman daftar file milik user login
     public function index(Request $request)
     {
-        $query = File::with('uploader')->where('uploaded_by', Auth::id());
+        $userId = Auth::id();
+
+        $query = File::with('uploader')
+            ->where('uploaded_by', $userId); 
 
         // Search keyword
         if ($request->keyword) {
@@ -51,7 +54,7 @@ class FileController extends Controller
 
         $files = $query->get();
         $users = User::all();
-        $folders = Folder::where('created_by', Auth::id())->get();
+        $folders = Folder::where('created_by', $userId)->get(); 
 
          $viewMode = $request->input('view', 'grid');
 
@@ -84,6 +87,7 @@ class FileController extends Controller
             'file_type' => strtolower($file->getClientOriginalExtension()),
             'file_size' => $file->getSize(),
             'mime_type' => $file->getClientMimeType(),
+            'status' => 'Private',
             'description' => $request->description,
         ]);
 
@@ -162,7 +166,8 @@ class FileController extends Controller
     // Download file
     public function download($id)
     {
-        $file = File::where('id', $id)->where('uploaded_by', Auth::id())->firstOrFail();
+        $file = File::findOrFail($id);
+        if (!$file->canAccess(Auth::id())) abort(403);
         $filePath = storage_path('app/public/' . $file->file_path);
 
        logActivity("Download File", "Mengunduh file {$file->file_name}");
@@ -255,4 +260,32 @@ class FileController extends Controller
         return back()->with('success', 'File berhasil dibagikan dan notifikasi dikirim.');
     }
     
+    public function updateStatus(Request $request, $id)
+    {
+        $file = File::findOrFail($id);
+
+        if ($file->uploaded_by != Auth::id()) {
+            abort(403);
+        }
+
+        if ($file->folder_id) {
+            $folder = $file->folder;
+            // Jangan izinkan ubah status jika file berasal dari folder
+            return back()->with('error', 'File ini berasal dari folder. Ubah status foldernya untuk mempengaruhi semua file di dalamnya.');
+        }
+
+        $newStatus = $request->filled('status')
+            ? $request->status
+            : ($file->status === 'Private' ? 'Public' : 'Private');
+
+        $file->status = $newStatus;
+        $file->save();
+
+        if ($newStatus === 'Public') {
+            // Hapus semua share karena sudah public
+            $file->shares()->delete();
+        }
+
+        return back()->with('success', "Status berhasil diubah menjadi {$newStatus}");
+    }
 }

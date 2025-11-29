@@ -63,11 +63,31 @@ class SharedController extends Controller
         ));
     }
 
+    public function public(Request $request)
+    {
+        $sort = $request->query('sort', 'latest');
+
+        $publicFiles = File::where('status', 'Public')
+            ->whereNull('folder_id')
+            ->whereNull('deleted_at')
+            ->orderBy('created_at', $sort == 'oldest' ? 'asc' : 'desc')
+            ->get();
+
+        $publicFolders = Folder::where('status', 'Public')
+            ->whereNull('deleted_at')
+            ->with(['files' => function($q) {
+                $q->where('status', 'Public');
+            }])
+            ->orderBy('created_at', $sort == 'oldest' ? 'asc' : 'desc')
+            ->get();
+
+        return view('shared.public', compact('publicFiles', 'publicFolders', 'sort'));
+    }
+
     public function store(Request $request, $id)
     {
         $request->validate([
             'email' => 'required|string', // bisa isi lebih dari 1 email dipisah koma
-            'permission' => 'required|in:view,edit,download',
             'message' => 'nullable|string'
         ]);
 
@@ -84,7 +104,6 @@ class SharedController extends Controller
                 'file_id' => $file->id,
                 'shared_by' => Auth::id(),
                 'shared_with' => $receiver->id,
-                'permission' => $request->permission,
                 'message' => $request->message, // boleh null sekarang
             ]);
 

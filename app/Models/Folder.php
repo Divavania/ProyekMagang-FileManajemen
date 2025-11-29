@@ -19,17 +19,27 @@ class Folder extends Model
     protected $fillable = [
         'name',
         'parent_id',
+        'divisi',
+        'status',
         'created_by',
     ];
 
+    public function canAccess($userId)
+    {
+        if ($this->status === 'Public') return true;
+        if ($this->created_by == $userId) return true;
+
+        return $this->shares()->where('shared_with', $userId)->exists();
+    }
+
     public function shares()
     {
-        return $this->hasMany(FolderShare::class);
+        return $this->hasMany(FolderShare::class, 'folder_id');
     }
     // Relasi ke FileItem
     public function files()
     {
-        return $this->hasMany(\App\Models\File::class, 'folder_id');
+        return $this->hasMany(File::class, 'folder_id');
     }
 
     // Relasi ke User pembuat folder

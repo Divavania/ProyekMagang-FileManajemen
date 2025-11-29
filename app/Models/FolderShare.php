@@ -13,7 +13,6 @@ class FolderShare extends Model
         'folder_id',
         'shared_by',
         'shared_with',
-        'permission',
         'message',
     ];
 
@@ -28,6 +27,16 @@ class FolderShare extends Model
     }
 
     public function receiver()
+    {
+        return $this->belongsTo(User::class, 'shared_with');
+    }
+
+    public function sharedBy()
+    {
+        return $this->belongsTo(User::class, 'shared_by');
+    }
+
+    public function sharedWith()
     {
         return $this->belongsTo(User::class, 'shared_with');
     }

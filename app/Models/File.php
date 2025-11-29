@@ -25,14 +25,25 @@ class File extends Model
         'mime_type',
         'status',
         'description',
-        'share_type',
-        'shared_with',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function canAccess($userId)
+    {
+        if ($this->status === 'Public') return true;
+        if ($this->uploaded_by == $userId) return true;
+
+        return $this->shares()->where('shared_with', $userId)->exists();
+    }
+
+    public function shares()
+    {
+        return $this->hasMany(Share::class, 'file_id');
+    }
 
     // Relasi manual ke user
     public function uploader()

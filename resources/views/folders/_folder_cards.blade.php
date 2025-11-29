@@ -79,6 +79,24 @@ $allFolders = $allFolders ?? Folder::with('children')->where('created_by', Auth:
                   <i class="bi bi-share me-2"></i>Bagikan
                 </button>
               </li>
+
+              <li>
+                <form action="{{ route('folders.status', $folder->id) }}" method="POST">
+                  @csrf
+                  @method('PUT')
+
+                  <button type="submit" class="dropdown-item">
+                    @if($folder->status === 'Private')
+                      <i class="bi bi-unlock me-2 text-success"></i>
+                      Jadikan Publik
+                    @else
+                      <i class="bi bi-lock me-2 text-warning"></i>
+                      Jadikan Privat
+                    @endif
+                  </button>
+                </form>
+              </li>
+              
               <li>
                 <button type="button"
                         class="dropdown-item toggle-favorite-folder"

@@ -42,7 +42,6 @@ class FolderShareController extends Controller
     {
         $request->validate([
             'email' => 'required|string',
-            'permission' => 'required|in:view,edit,download',
             'message' => 'nullable|string'
         ]);
 
@@ -58,7 +57,6 @@ class FolderShareController extends Controller
                 'folder_id' => $folder->id,
                 'shared_by' => Auth::id(),
                 'shared_with' => $receiver->id,
-                'permission' => $request->permission,
                 'message' => $request->message
             ]);
             

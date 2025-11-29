@@ -50,6 +50,28 @@
       </li>
 
       <li>
+          @if(!is_null($file->folder_id))
+              {{-- File berasal dari folder → disabled --}}
+              <button class="dropdown-item" disabled
+                      title="File ini berasal dari folder '{{ $file->folder->name }}'. Ubah status folder untuk mempengaruhi semua file di dalamnya.">
+                  <i class="bi bi-shield-lock me-2"></i>Ubah Status
+              </button>
+          @else
+              {{-- File root → bisa ubah status --}}
+              <button type="button"
+                      class="dropdown-item toggle-status-btn"
+                      data-id="{{ $file->id }}"
+                      data-status="{{ $file->status === 'Private' ? 'Public' : 'Private' }}">
+                  @if($file->status === 'Private')
+                      <i class="bi bi-unlock me-2 text-success"></i>Jadikan Publik
+                  @else
+                      <i class="bi bi-lock me-2 text-warning"></i>Jadikan Privat
+                  @endif
+              </button>
+          @endif
+      </li>
+
+      <li>
         <button type="button"
                 class="dropdown-item toggle-favorite-btn"
                 data-id="{{ $file->id }}">
@@ -155,5 +177,24 @@
     opacity: 1;
     visibility: visible;
 }
-
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.dropdown-item.toggle-status-btn').forEach(btn => {
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+            let fileId = this.dataset.id;
+            let status = this.dataset.status;
+
+            fetch(`/files/${fileId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({status})
+            }).then(res => location.reload()); // reload setelah update
+        });
+    });
+});
+</script>

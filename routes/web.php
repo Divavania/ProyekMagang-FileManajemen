@@ -100,6 +100,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/folders/{id}', [FolderController::class, 'update'])->name('folders.update');
         Route::get('/folders/{id}/download', [FolderController::class, 'downloadZip'])->name('folders.downloadZip');
         Route::post('/folders/store', [FolderController::class, 'store'])->name('store.folder');
+        Route::put('/folders/{id}/status', [FolderController::class, 'updateFolderStatus'])->name('folders.status');
         Route::post('/upload-folder', [FileController::class, 'storeFolder'])->name('store.upload.folder');
         Route::delete('/folders/{id}', [FolderController::class, 'destroy'])->name('folders.destroy');
         Route::post('/folders', [FolderController::class, 'store'])->name('folders.store');
@@ -111,6 +112,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/folders/move', [FolderController::class, 'move'])->name('folders.move');
 
         Route::get('/upload-file', [FileController::class, 'create'])->name('upload.file');
+        Route::put('/files/{id}/status', [FileController::class, 'updateStatus'])->name('files.status');
         Route::post('/upload-file', [FileController::class, 'store'])->name('store.file');
         Route::delete('/delete-file/{id}', [FileController::class, 'destroy'])->name('delete.file');
 
@@ -134,6 +136,7 @@ Route::middleware('auth')->group(function () {
 
         // Shared
         Route::get('/shared', [SharedController::class, 'index'])->name('shared.index');
+        Route::get('/shared/public', [SharedController::class, 'public'])->name('shared.public');
         Route::post('/files/share/{id}', [SharedController::class, 'store'])->name('files.share');
         Route::delete('/share/{id}', [SharedController::class, 'removeShare'])->name('share.remove');
         Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
