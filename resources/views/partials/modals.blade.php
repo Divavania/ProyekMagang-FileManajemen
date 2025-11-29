@@ -6,14 +6,14 @@
     <form class="modal-content" method="POST" action="{{ route('store.folder') }}">
       @csrf
       <div class="modal-header">
-        <h5>Create New Folder</h5>
+        <h5>Tambah Folder Baru</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <input type="text" name="name" class="form-control" placeholder="Enter folder name" required>
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" class="btn btn-primary">Buat</button>
       </div>
     </form>
   </div>
@@ -25,14 +25,14 @@
     <form class="modal-content" method="POST" action="{{ route('store.file') }}" enctype="multipart/form-data">
       @csrf
       <div class="modal-header">
-        <h5>Upload File</h5>
+        <h5>Unggah File</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <input type="file" name="file" class="form-control" required>
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Upload</button>
+        <button type="submit" class="btn btn-primary">Ungah</button>
       </div>
     </form>
   </div>
@@ -44,7 +44,7 @@
     <form class="modal-content" id="uploadFolderForm">
       @csrf
       <div class="modal-header">
-        <h5>Upload Folder</h5>
+        <h5>Unggah Folder</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
@@ -52,8 +52,8 @@
         <small class="text-muted">Pilih folder, termasuk subfolder dan file di dalamnya.</small>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary">Upload</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-primary">Unggah</button>
       </div>
     </form>
   </div>

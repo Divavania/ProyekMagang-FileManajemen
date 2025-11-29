@@ -178,7 +178,8 @@
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
   <h4 class="text-primary mb-4 text-center">
-    <i class="bi bi-cloud-arrow-up-fill me-2"></i>Radar Files
+      <img src="{{ asset('images/RadarMadiun.jpg') }}" alt="Logo" class="me-2" style="width: 40px; height: 40px; object-fit: cover; vertical-align: middle;">
+      Radar Files
   </h4>
 
   <a href="{{ route('dashboard') }}" class="{{ request()->is('dashboard') ? 'active' : '' }}">
@@ -188,17 +189,17 @@
   <!-- === MENU NEW (dropdown) === -->
   <div class="dropdown">
     <button class="dropdown-toggle" type="button" id="newMenu" data-bs-toggle="dropdown" aria-expanded="false">
-      <i class="bi bi-plus-circle"></i> New
+      <i class="bi bi-plus-circle"></i> Baru
     </button>
     <ul class="dropdown-menu w-100" aria-labelledby="newMenu">
       <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#createFolderModal">
-        <i class="bi bi-folder-plus me-2"></i> Create Folder
+        <i class="bi bi-folder-plus me-2"></i> Buat Folder
       </a></li>
       <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#uploadFileModal">
-        <i class="bi bi-file-earmark-arrow-up me-2"></i> Upload File
+        <i class="bi bi-file-earmark-arrow-up me-2"></i> Unggah File
       </a></li>
       <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#uploadFolderModal">
-        <i class="bi bi-folder-symlink me-2"></i> Upload Folder
+        <i class="bi bi-folder-symlink me-2"></i> Unggah Folder
       </a></li>
     </ul>
   </div>
@@ -245,7 +246,7 @@
   <form action="{{ route('logout') }}" method="POST" class="mt-3">
     @csrf
     <button type="submit" class="btn btn-danger w-100">
-      <i class="bi bi-box-arrow-right me-2"></i> Logout
+      <i class="bi bi-box-arrow-right me-2"></i> Keluar
     </button>
   </form>
 </div>

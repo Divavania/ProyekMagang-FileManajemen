@@ -70,7 +70,20 @@
                 @foreach($trashedFiles as $file)
                   <tr>
                     <td class="text-break">{{ $file->file_name }}</td>
-                    <td class="text-center">{{ number_format($file->size / 1024, 2) }} KB</td>
+                    <td class="text-center">
+                      @php
+                        $size = $file->file_size ?? 0;
+                        if ($size >= 1073741824) {
+                          echo number_format($size / 1073741824, 2) . ' GB';
+                        } elseif ($size >= 1048576) {
+                          echo number_format($size / 1048576, 2) . ' MB';
+                        } elseif ($size >= 1024) {
+                          echo number_format($size / 1024, 2) . ' KB';
+                        } else {
+                          echo $size . ' B';
+                        }
+                      @endphp
+                    </td>
                     <td class="text-center">{{ $file->deleted_at->format('d M Y H:i') }}</td>
                     <td class="text-center">
                       <div class="d-flex justify-content-center gap-2 flex-wrap">

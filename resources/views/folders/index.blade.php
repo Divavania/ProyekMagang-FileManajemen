@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'My Folders - RadarFiles')
-@section('page_title', 'My Folders')
+@section('page_title', 'Folder Saya')
 
 @section('content')
 <div class="container-fluid px-4 py-3">
@@ -10,7 +10,7 @@
   <form class="row g-2 align-items-center mb-4" method="GET" action="{{ route('folders.index') }}">
     <div class="col-md-6 col-lg-5">
       <input type="text" name="search" class="form-control"
-             placeholder="Search folders..." value="{{ request('search') }}">
+             placeholder="Cari folder..." value="{{ request('search') }}">
     </div>
     <div class="col-md-2 col-lg-2">
       <button class="btn btn-primary w-100">Cari</button>
