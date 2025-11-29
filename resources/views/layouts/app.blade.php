@@ -276,10 +276,11 @@
   }
 @endphp
 
- <!-- 🔔 Notification Dropdown -->
+ <!-- Notification Dropdown -->
   <div class="dropdown">
-    <button class="btn btn-light position-relative rounded-circle" type="button" id="notificationDropdown"
-            data-bs-toggle="dropdown" aria-expanded="false">
+    <button class="btn border-0 bg-transparent position-relative" 
+        type="button" id="notificationDropdown"
+        data-bs-toggle="dropdown" aria-expanded="false">
       <i class="bi bi-bell fs-5"></i>
       @if($unreadCount > 0)
         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -323,7 +324,7 @@
     </div>
   </div>
 
-    <!-- 👤 Role & Profil -->
+    <!-- Role & Profil -->
     <span class="text-muted me-2">{{ Auth::user()->role ?? 'User' }}</span>
     @if(Auth::user()->photo && file_exists(public_path('storage/' . Auth::user()->photo)))
       <img src="{{ asset('storage/' . Auth::user()->photo) }}"
