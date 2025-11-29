@@ -97,8 +97,8 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
     @endif
 
-    <div class="table-card">
-        <table class="table modern-table align-middle">
+   <div class="table-card table-responsive">
+    <table class="table modern-table align-middle">
 
             <thead>
                 <tr>
@@ -183,4 +183,54 @@ document.addEventListener("DOMContentLoaded", function () {
     @include('users.modals.delete', ['user' => $user, 'authRole' => auth()->user()->role])
 @endforeach
 
+<style>
+    /* RESPONSIVE MOBILE */
+@media (max-width: 576px) {
+
+    /* Perkecil padding kartu */
+    .table-card {
+        padding: 12px;
+    }
+
+    /* Perkecil teks agar muat */
+    .modern-table th,
+    .modern-table td {
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    /* Badge lebih kecil */
+    .badge-modern {
+        padding: 4px 8px;
+        font-size: 0.65rem;
+    }
+
+    /* Tombol aksi lebih kecil */
+    .action-btn {
+        padding: 4px 6px;
+        border-radius: 6px;
+    }
+
+    /* Kolom aksi agar rapi */
+    td.text-center {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .modern-table th,
+    .modern-table td {
+        font-size: 0.9rem;
+    }
+
+    .badge-modern {
+        padding: 5px 10px;
+        font-size: 0.7rem;
+    }
+}
+
+</style>
 @endsection

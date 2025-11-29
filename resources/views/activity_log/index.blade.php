@@ -278,6 +278,9 @@
     word-wrap: break-word;
 }
 
+.badge-action {
+    white-space: nowrap !important;
+}
 
 /* ===========================
    RESPONSIVE
@@ -300,24 +303,17 @@
 }
 
 @media (max-width: 576px) {
-
-    .modern-table thead th,
-    .modern-table tbody td {
-        font-size: 13px !important;
-    }
-
     .badge-action {
-        font-size: 11px !important;
-        padding: 4px 8px !important;
+        white-space: normal !important;
+        font-size: 10px !important;
+        padding: 3px 6px !important;
+        line-height: 1.2;
+        text-align: center;
     }
 
-    .truncate {
-        -webkit-line-clamp: 3 !important;
-    }
-
-    .soft-alert {
-        font-size: 12px !important;
-        padding: 6px 10px !important;
+    .modern-table td:nth-child(3),
+    .modern-table th:nth-child(3) {
+        width: 85px !important;
     }
 }
 
