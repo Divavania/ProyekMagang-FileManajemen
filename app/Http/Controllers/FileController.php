@@ -95,18 +95,15 @@ class FileController extends Controller
     {
         $file = File::where('id', $id)->where('uploaded_by', Auth::id())->firstOrFail();
 
-        logActivity("Menghapus File", "Menghapus file {$file->file_name}");
+        logActivity("Menghapus File", "Memindahkan file {$file->file_name} ke sampah");
 
-        if ($file->file_path && Storage::disk('public')->exists($file->file_path)) {
-            Storage::disk('public')->delete($file->file_path);
-        }
+        // Jangan hapus file fisik saat soft delete
+        $file->delete(); // cukup soft delete, file fisik tetap ada
 
-        $file->delete();
-        return redirect()->route('files.index')->with('success', 'File berhasil dihapus.');
+        return redirect()->route('files.index')->with('success', 'File berhasil dipindahkan ke sampah.');
     }
 
     // Bulk delete file
-
     public function bulkDelete(Request $request)
     {
         $ids = $request->input('selected_files', []);
@@ -195,39 +192,39 @@ class FileController extends Controller
 
     // Pindahkan file 
    public function move(Request $request, $id)
-{
-    $request->validate([
-        'folder_id' => 'required|exists:folders,id'
-    ]);
+    {
+        $request->validate([
+            'folder_id' => 'required|exists:folders,id'
+        ]);
 
-    $file = File::where('id', $id)
-                ->where('uploaded_by', Auth::id())
-                ->firstOrFail();
-
-    // Pastikan folder milik user
-    $folder = Folder::where('id', $request->folder_id)
-                    ->where('created_by', Auth::id())
+        $file = File::where('id', $id)
+                    ->where('uploaded_by', Auth::id())
                     ->firstOrFail();
 
-    logActivity("Memindahkan File", "Memindahkan file {$file->file_name} ke folder {$folder->folder_name}");
+        // Pastikan folder milik user
+        $folder = Folder::where('id', $request->folder_id)
+                        ->where('created_by', Auth::id())
+                        ->firstOrFail();
 
-    $file->folder_id = $folder->id;
-    $file->save();
+        logActivity("Memindahkan File", "Memindahkan file {$file->file_name} ke folder {$folder->folder_name}");
 
-    return back()->with('success', 'File berhasil dipindahkan.');
-}
+        $file->folder_id = $folder->id;
+        $file->save();
+
+        return back()->with('success', 'File berhasil dipindahkan.');
+    }
 
 //Share Link File
     public function shareLink($id)
-{
-    $file = File::findOrFail($id);
+    {
+        $file = File::findOrFail($id);
 
-    logActivity("Mengambil share link untuk file: {$file->file_name}");
+        logActivity("Mengambil share link untuk file: {$file->file_name}");
 
-    $link = asset('storage/' . $file->file_path);
+        $link = asset('storage/' . $file->file_path);
 
-    return response()->json(['link' => $link]);
-}
+        return response()->json(['link' => $link]);
+    }
 
     // Pindahkan folder via form
     public function moveToFolder(Request $request, File $file)
@@ -246,16 +243,16 @@ class FileController extends Controller
 
     //Notif File Shared
    public function shareFile(Request $request)
-{
-    $file = File::findOrFail($request->file_id);
-    $receiver = User::findOrFail($request->receiver_id);
+    {
+        $file = File::findOrFail($request->file_id);
+        $receiver = User::findOrFail($request->receiver_id);
 
-    logActivity("Membagikan file {$file->file_name} kepada {$receiver->name}");
+        logActivity("Membagikan file {$file->file_name} kepada {$receiver->name}");
 
-    // kirim notifikasi ke user penerima
-    $receiver->notify(new FileSharedNotification($file, 'file'));
+        // kirim notifikasi ke user penerima
+        $receiver->notify(new FileSharedNotification($file, 'file'));
 
-    return back()->with('success', 'File berhasil dibagikan dan notifikasi dikirim.');
-}
+        return back()->with('success', 'File berhasil dibagikan dan notifikasi dikirim.');
+    }
     
 }

@@ -42,12 +42,8 @@ class TrashController extends Controller
     // Hapus permanen file
     public function forceDelete($id)
     {
-        $file = File::onlyTrashed()
-            ->where('id', $id)
-            ->where('uploaded_by', Auth::id())
-            ->firstOrFail();
+        $file = File::onlyTrashed()->where('id', $id)->where('uploaded_by', Auth::id())->firstOrFail();
 
-        // hapus file fisiknya dari storage
         if ($file->file_path && Storage::disk('public')->exists($file->file_path)) {
             Storage::disk('public')->delete($file->file_path);
         }
