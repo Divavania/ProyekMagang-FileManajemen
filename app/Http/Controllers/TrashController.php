@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\File;
 use App\Models\Folder;
+use Carbon\Carbon;
 
 class TrashController extends Controller
 {
@@ -16,14 +17,33 @@ class TrashController extends Controller
         $trashedFiles = File::onlyTrashed()
             ->where('uploaded_by', Auth::id())
             ->orderBy('deleted_at', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($file) {
+                $file->days_until_deletion = $this->daysUntilDeletion($file->deleted_at);
+                $file->will_be_deleted_at = Carbon::parse($file->deleted_at)->addDays(14);
+                return $file;
+            });
 
         $trashedFolders = Folder::onlyTrashed()
             ->where('created_by', Auth::id())
             ->orderBy('deleted_at', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($folder) {
+                $folder->days_until_deletion = $this->daysUntilDeletion($folder->deleted_at);
+                $folder->will_be_deleted_at = Carbon::parse($folder->deleted_at)->addDays(14);
+                return $folder;
+            });
 
         return view('trash.index', compact('trashedFiles', 'trashedFolders'));
+    }
+
+    // Hitung hari tersisa sebelum penghapusan permanen
+    private function daysUntilDeletion($deletedAt)
+    {
+        $deletionDate = Carbon::parse($deletedAt)->addDays(14);
+        $daysRemaining = Carbon::now()->diffInDays($deletionDate, false);
+        
+        return max(0, ceil($daysRemaining)); // Jangan sampai negatif
     }
 
     // Pulihkan file dari sampah
@@ -146,7 +166,7 @@ class TrashController extends Controller
         $folder->forceDelete();
     }
 
-    // 🔄 Pulihkan semua folder
+    // Pulihkan semua folder
     public function restoreAllFolders()
     {
         $folders = Folder::onlyTrashed()->where('created_by', Auth::id())->get();
@@ -162,7 +182,7 @@ class TrashController extends Controller
         return back()->with('success', 'Semua folder berhasil dipulihkan.');
     }
 
-    // 🧹 Hapus permanen semua folder
+    // Hapus permanen semua folder
     public function emptyFolders()
     {
         $folders = Folder::onlyTrashed()->where('created_by', Auth::id())->get();
@@ -177,5 +197,4 @@ class TrashController extends Controller
 
         return back()->with('success', 'Semua folder di sampah telah dihapus permanen.');
     }
-
 }

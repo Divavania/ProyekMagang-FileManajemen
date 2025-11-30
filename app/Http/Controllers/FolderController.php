@@ -89,41 +89,6 @@ class FolderController extends Controller
         return view('dashboard', compact('folders', 'allFolders'));
     }
 
-    // Update folder
-    // public function update(Request $request, $id)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //     ]);
-
-    //     $folder = Folder::where('id', $id)
-    //         ->where(function ($query) {
-    //             $query->where('created_by', Auth::id())
-    //                 ->orWhereNull('created_by');
-    //         })
-    //         ->firstOrFail();
-
-    //     $folder->update([
-    //         'name' => $request->name,
-    //     ]);
-
-    //     // ✅ Jika folder punya parent, arahkan ke folder induknya
-    //     if ($folder->parent_id) {
-    //         return redirect()->route('folders.show', $folder->parent_id)
-    //             ->with('success', 'Folder berhasil diperbarui.');
-    //     }
-
-    //     // ✅ Jika berasal dari dashboard (cek referer URL), balik ke sana
-    //     if (str_contains(url()->previous(), route('dashboard'))) {
-    //         return redirect()->route('dashboard')
-    //             ->with('success', 'Folder berhasil diperbarui.');
-    //     }
-
-    //     // ✅ Default: arahkan ke halaman index folder
-    //     return redirect()->route('folders.index')
-    //         ->with('success', 'Folder berhasil diperbarui.');
-    // }
-
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -158,19 +123,6 @@ class FolderController extends Controller
             ->with('success', 'Folder berhasil diperbarui.');
     }
 
-    // public function destroy($id)
-    // {
-    //     $folder = Folder::where('id', $id)
-    //         ->where('created_by', Auth::id())
-    //         ->with(['children', 'files']) // ambil relasi supaya bisa dihapus semua
-    //         ->firstOrFail();
-
-    //     // 🔁 Fungsi rekursif untuk hapus subfolder dan file di dalamnya
-    //     $this->deleteFolderRecursive($folder);
-
-    //     return back()->with('success', 'Folder dan seluruh isinya berhasil dihapus.');
-    // }
-
     // Hapus folder (soft delete)
     public function destroy($id)
     {
@@ -191,27 +143,6 @@ class FolderController extends Controller
         return redirect()->route('trash.folders')
             ->with('success', 'Folder berhasil dipindahkan ke sampah.');
     }
-
-    // private function deleteFolderRecursive($folder)
-    // {
-    //     // 1️⃣ Hapus semua file di folder ini
-    //     foreach ($folder->files as $file) {
-    //         // hapus dari storage
-    //         if (\Illuminate\Support\Facades\Storage::exists($file->file_path)) {
-    //             \Illuminate\Support\Facades\Storage::delete($file->file_path);
-    //         }
-    //         // hapus dari database
-    //         $file->delete();
-    //     }
-
-    //     // 2️⃣ Hapus semua subfolder dan isinya
-    //     foreach ($folder->children as $childFolder) {
-    //         $this->deleteFolderRecursive($childFolder);
-    //     }
-
-    //     // 3️⃣ Hapus folder itu sendiri
-    //     $folder->delete();
-    // }
 
     private function deleteFolderRecursive($folder)
     {
@@ -306,20 +237,97 @@ class FolderController extends Controller
         return response()->json(['success' => true, 'message' => 'Folders uploaded successfully!']);
     }
 
-    // public function move(Request $request)
-    // {
-    //     $folder = Folder::findOrFail($request->folder_id);
+    public function uploadFolder(Request $request)
+    {
+        try {
+            $request->validate([
+                'files.*' => 'required|file|max:10240', // Max 10MB per file
+                'paths.*' => 'required|string',
+                'parent_id' => 'nullable|exists:folders,id'
+            ]);
 
-    //     // Jangan bisa dipindahkan ke dirinya sendiri
-    //     if($request->parent_id == $folder->id){
-    //         return redirect()->back()->with('error', 'Folder tidak bisa dipindah ke dirinya sendiri.');
-    //     }
+            $parentId = $request->parent_id;
+            $files = $request->file('files');
+            $paths = $request->paths;
 
-    //     $folder->parent_id = $request->parent_id ?: null; // null = root
-    //     $folder->save();
+            if (!$files || !$paths) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Tidak ada file yang diunggah'
+                ], 400);
+            }
 
-    //     return redirect()->back()->with('success', 'Folder berhasil dipindah.');
-    // }
+            $folderMap = []; // Cache folder yang sudah dibuat
+            $uploadedCount = 0;
+
+            foreach ($files as $index => $file) {
+                $relativePath = $paths[$index];
+                $pathParts = explode('/', $relativePath);
+                
+                // Hapus nama file dari path
+                array_pop($pathParts);
+
+                // Buat folder secara hierarki
+                $currentParentId = $parentId;
+                $currentPath = '';
+
+                foreach ($pathParts as $folderName) {
+                    if (!$folderName) continue;
+
+                    $currentPath .= '/' . $folderName;
+
+                    // Cek apakah folder sudah dibuat
+                    if (!isset($folderMap[$currentPath])) {
+                        $folder = Folder::firstOrCreate([
+                            'name' => $folderName,
+                            'parent_id' => $currentParentId,
+                            'created_by' => auth()->id(),
+                        ], [
+                            'status' => 'Private'
+                        ]);
+
+                        $folderMap[$currentPath] = $folder->id;
+                    }
+
+                    $currentParentId = $folderMap[$currentPath];
+                }
+
+                // Upload file
+                $fileName = $file->getClientOriginalName();
+                $filePath = $file->store('uploads', 'public');
+
+                File::create([
+                    'file_name' => $fileName,
+                    'file_path' => $filePath,
+                    'file_type' => $file->extension(),
+                    'file_size' => $file->getSize(),
+                    'folder_id' => $currentParentId,
+                    'uploaded_by' => auth()->id(),
+                    'status' => 'Private'
+                ]);
+
+                $uploadedCount++;
+            }
+
+            logActivity(
+                'upload_folder', 
+                'Mengunggah folder dengan ' . $uploadedCount . ' file'
+            );
+
+            return response()->json([
+                'success' => true, 
+                'message' => "Berhasil mengunggah {$uploadedCount} file"
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Upload folder error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false, 
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function downloadZip($id)
     {
@@ -348,9 +356,7 @@ class FolderController extends Controller
         return response()->download($zipPath, $zipName)->deleteFileAfterSend(true);
     }
 
-    /**
-     * Tambahkan folder dan semua file/subfolder ke zip secara rekursif
-     */
+    // Tambahkan folder dan semua file/subfolder ke zip secara rekursif
     private function addFolderToZip(Folder $folder, ZipArchive $zip, $parentPath = '')
     {
         $currentPath = $parentPath ? $parentPath . '/' . $folder->name : $folder->name;
