@@ -230,7 +230,7 @@
     {{-- ADMIN & SUPERADMIN boleh tambah user --}}
     @if(Auth::check() && in_array(Auth::user()->role, ['admin', 'superadmin']))
     <a href="{{ route('users.index') }}" class="{{ request()->is('users*') ? 'active' : '' }}">
-        <i class="bi bi-person-plus"></i> Tambah User
+        <i class="bi bi-person-plus"></i> Daftar Pengguna
     </a>
     @endif
 

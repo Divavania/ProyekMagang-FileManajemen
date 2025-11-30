@@ -1,5 +1,5 @@
 @extends('layouts.app') 
-@section('page_title', 'Daftar User')
+@section('page_title', 'Daftar Pengguna')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 @section('content')
