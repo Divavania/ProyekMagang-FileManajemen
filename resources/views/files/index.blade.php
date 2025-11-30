@@ -227,7 +227,7 @@ deleteSelectedBtn.addEventListener('click', (e) => {
 
         const data = await res.json();
 
-        if (data.status === 'ok') {
+       if (data.status === 'ok') {
           // Update icon di dropdown
           const icon = btn.querySelector('i');
 
@@ -235,6 +235,16 @@ deleteSelectedBtn.addEventListener('click', (e) => {
             icon.classList.remove('bi-star', 'text-secondary');
             icon.classList.add('bi-star-fill', 'text-warning');
             btn.innerHTML = `<i class="bi bi-star-fill text-warning me-2"></i>Hapus dari Favorit`;
+
+            // Tambahkan notifikasi Swal
+            Swal.fire({
+              icon: 'success',
+              title: 'Berhasil',
+              text: 'File telah ditambahkan ke favorit',
+              timer: 1500,
+              showConfirmButton: false
+            });
+
           } else {
             icon.classList.remove('bi-star-fill', 'text-warning');
             icon.classList.add('bi-star', 'text-secondary');

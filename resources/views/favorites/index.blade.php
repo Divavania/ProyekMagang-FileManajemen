@@ -46,7 +46,6 @@
   </div>
 </div>
 
-
           {{-- Thumbnail / Preview --}}
           <div class="card-body text-center p-3">
             <a href="#" data-bs-toggle="modal" data-bs-target="#previewFileModal{{ $file->id }}">
@@ -59,13 +58,29 @@
               @elseif(in_array($ext, ['mp4','mov','avi','mkv','webm']))
                 <div class="position-relative bg-dark rounded overflow-hidden" style="height:110px;">
                   <video class="w-100 h-100" style="object-fit:cover;" muted preload="metadata" playsinline
-                         onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0;">
+                        onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0;">
                     <source src="{{ $fileUrl }}" type="video/mp4">
                   </video>
                 </div>
               @elseif($ext == 'pdf')
                 <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:110px;">
                   <i class="bi bi-file-earmark-pdf fs-1 text-danger"></i>
+                </div>
+              @elseif(in_array($ext, ['doc','docx']))
+                <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:110px;">
+                  <i class="bi bi-file-earmark-word fs-1 text-primary"></i>
+                </div>
+              @elseif(in_array($ext, ['ppt','pptx']))
+                <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:110px;">
+                  <i class="bi bi-file-earmark-ppt fs-1 text-warning"></i>
+                </div>
+              @elseif(in_array($ext, ['xls','xlsx','csv']))
+                <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:110px;">
+                  <i class="bi bi-file-earmark-excel fs-1 text-success"></i>
+                </div>
+              @elseif(in_array($ext, ['zip','rar','7z']))
+                <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:110px;">
+                  <i class="bi bi-file-earmark-zip fs-1 text-dark"></i>
                 </div>
               @else
                 <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:110px;">
@@ -74,66 +89,64 @@
               @endif
             </a>
 
-            <h6 class="text-truncate mt-2 mb-0" title="{{ $file->file_name }}">{{ $file->file_name }}</h6>
+            <p class="text-truncate mt-2 mb-0" title="{{ $file->file_name }}">{{ $file->file_name }}</p>
             <small class="text-muted d-block">{{ $file->uploader->name ?? 'Unknown' }}</small>
             <small class="text-muted">{{ $file->created_at->format('d M Y') }}</small>
           </div>
 
           {{-- Modal Preview (versi disamakan dengan File Saya + tombol bintang kiri) --}}
           <div class="modal fade" id="previewFileModal{{ $file->id }}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-xl modal-dialog-centered">
-              <div class="modal-content bg-dark text-white rounded-4 border-0 overflow-hidden">
-                
-                {{-- Header Preview --}}
-                <div class="modal-header border-0 bg-dark d-flex align-items-center justify-content-between">
-                  <div class="d-flex align-items-center gap-2">
-                    {{-- Tombol bintang di kiri --}}
-                    <button class="btn btn-sm btn-outline-warning rounded-circle toggle-favorite" data-id="{{ $file->id }}">
-                      <i class="bi bi-star-fill text-warning"></i>
-                    </button>
-                    <h6 class="mb-0 text-truncate" style="max-width: 400px;">{{ $file->file_name }}</h6>
-                  </div>
+          <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content bg-white text-dark rounded-4 border-0 overflow-hidden">
 
-                  {{-- Dropdown kanan atas --}}
-                  <div class="dropdown">
-                    <button class="btn btn-sm btn-outline-light rounded-circle" type="button" data-bs-toggle="dropdown">
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow">
-                      <li><a class="dropdown-item" href="{{ route('files.download', $file->id) }}"><i class="bi bi-download me-2"></i>Unduh</a></li>
-                      <li><button type="button" class="dropdown-item btn-unfavorite" data-id="{{ $file->id }}"><i class="bi bi-star me-2"></i>Hapus dari Favorit</button></li>
-                    </ul>
-                  </div>
+              {{-- Header Preview --}}
+              <div class="modal-header border-0 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-sm btn-outline-warning rounded-circle toggle-favorite" data-id="{{ $file->id }}">
+                    <i class="bi bi-star-fill text-warning"></i>
+                  </button>
+                  <h6 class="mb-0 text-truncate" style="max-width: 400px;">{{ $file->file_name }}</h6>
                 </div>
 
-                {{-- Body Preview --}}
-                <div class="modal-body bg-black text-center d-flex justify-content-center align-items-center" style="max-height:75vh;">
-                  @if(in_array($ext, ['jpg','jpeg','png','gif','webp','bmp']))
-                    <img src="{{ $fileUrl }}" class="img-fluid rounded shadow" style="max-height:70vh; object-fit:contain;">
-                  @elseif(in_array($ext, ['mp3','wav','ogg','flac']))
-                    <audio controls style="width:100%;"><source src="{{ $fileUrl }}" type="audio/{{ $ext }}">Browser tidak mendukung audio.</audio>
-                  @elseif(in_array($ext, ['mp4','mov','avi','mkv','webm']))
-                    <video class="rounded shadow w-100" style="max-height:70vh; background:#000;" controls autoplay muted playsinline>
-                      <source src="{{ $fileUrl }}" type="video/mp4">
-                    </video>
-                  @elseif($ext == 'pdf')
-                    <iframe src="{{ $fileUrl }}" class="w-100 border-0 rounded" style="height:70vh;"></iframe>
-                  @else
-                    <p class="text-light opacity-75">Preview tidak tersedia untuk tipe file ini.</p>
-                  @endif
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-outline-secondary rounded-circle" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li><a class="dropdown-item" href="{{ route('files.download', $file->id) }}"><i class="bi bi-download me-2"></i>Unduh</a></li>
+                    <li><button type="button" class="dropdown-item btn-unfavorite" data-id="{{ $file->id }}"><i class="bi bi-star me-2"></i>Hapus dari Favorit</button></li>
+                  </ul>
                 </div>
-
-                {{-- Footer --}}
-                <div class="modal-footer border-0 bg-dark justify-content-between">
-                  <small class="text-secondary">Diupload: {{ $file->created_at->format('d M Y, H:i') }}</small>
-                  <a href="{{ route('files.download', $file->id) }}" class="btn btn-outline-light btn-sm rounded-pill">
-                    <i class="bi bi-download me-1"></i> Unduh
-                  </a>
-                </div>
-
               </div>
+
+              {{-- Body Preview --}}
+              <div class="modal-body text-center d-flex justify-content-center align-items-center" style="max-height:75vh; background:#fff;">
+                @if(in_array($ext, ['jpg','jpeg','png','gif','webp','bmp']))
+                  <img src="{{ $fileUrl }}" class="img-fluid rounded shadow" style="max-height:70vh; object-fit:contain;">
+                @elseif(in_array($ext, ['mp3','wav','ogg','flac']))
+                  <audio controls style="width:100%;"><source src="{{ $fileUrl }}" type="audio/{{ $ext }}">Browser tidak mendukung audio.</audio>
+                @elseif(in_array($ext, ['mp4','mov','avi','mkv','webm']))
+                  <video class="rounded shadow w-100" style="max-height:70vh; background:#000;" controls autoplay muted playsinline>
+                    <source src="{{ $fileUrl }}" type="video/mp4">
+                  </video>
+                @elseif($ext == 'pdf')
+                  <iframe src="{{ $fileUrl }}" class="w-100 border-0 rounded" style="height:70vh;"></iframe>
+                @else
+                  <p class="text-dark opacity-75">Preview tidak tersedia untuk tipe file ini.</p>
+                @endif
+              </div>
+
+              {{-- Footer --}}
+              <div class="modal-footer border-0 justify-content-between">
+                <small class="text-secondary">Diupload: {{ $file->created_at->format('d M Y, H:i') }}</small>
+                <a href="{{ route('files.download', $file->id) }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+                  <i class="bi bi-download me-1"></i> Unduh
+                </a>
+              </div>
+
             </div>
           </div>
+        </div>
         </div>
       </div>
     @endif
@@ -177,22 +190,30 @@
 </div>
 
 <style>
-.file-card .position-absolute {
-  z-index: 5 !important;
-}
-.file-card video {
-  z-index: 1;
+.file-card {
   position: relative;
 }
 
-.file-card .position-absolute {
-  z-index: 5 !important;
+.file-card video {
+  pointer-events: none;
+  background-color: #ffff;
 }
 
-.file-card video {
-  z-index: 1;
-  position: relative;
+.file-card .position-absolute {
+  z-index: 10;
 }
+
+.file-card .dropdown {
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.2s ease;
+}
+
+.file-card:hover .dropdown {
+  opacity: 1;
+  visibility: visible;
+}
+
 
 </style>
 
