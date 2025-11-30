@@ -8,7 +8,7 @@
 
     {{-- Checkbox + Favorite + Dropdown --}}
     <div class="position-absolute top-0 start-0 m-2">
-      <input type="checkbox" class="form-check-input select-checkbox d-none" name="selected[]" value="{{ $file->id }}">
+     <input type="checkbox" class="form-check-input select-checkbox d-none" name="selected_files[]" value="{{ $file->id }}">
     </div>
 
 <div class="position-absolute top-0 end-0 m-2">
@@ -112,8 +112,29 @@
             </video>
           </div>
         @elseif($ext == 'pdf')
+         {{-- PDF --}}
+           <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:110px;">
+              <i class="bi bi-file-earmark-pdf fs-1 text-danger"></i>
+          </div>
+          @elseif(in_array($ext, ['doc','docx']))
+          {{-- WORD --}}
           <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:110px;">
-            <i class="bi bi-file-earmark-pdf fs-1 text-danger"></i>
+              <i class="bi bi-file-earmark-word fs-1 text-primary"></i>
+          </div>
+          @elseif(in_array($ext, ['ppt','pptx']))
+          {{-- POWERPOINT --}}
+          <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:110px;">
+              <i class="bi bi-file-earmark-ppt fs-1 text-warning"></i>
+          </div>
+          @elseif(in_array($ext, ['xls','xlsx','csv']))
+          {{-- EXCEL --}}
+          <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:110px;">
+              <i class="bi bi-file-earmark-excel fs-1 text-success"></i>
+          </div>
+          @elseif(in_array($ext, ['zip','rar','7z']))
+          {{-- ZIP / RAR --}}
+          <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:110px;">
+              <i class="bi bi-file-earmark-zip fs-1 text-dark"></i>
           </div>
         @else
           <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:110px;">

@@ -9,7 +9,7 @@
 <div class="container-fluid mt-3">
 
   {{-- === Toolbar === --}}
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+   <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
     <form id="searchForm" class="d-flex gap-2 align-items-center flex-grow-1 flex-wrap" method="GET" action="{{ route('files.index') }}">
       <input type="text" name="keyword" class="form-control" placeholder="Cari file..." value="{{ request('keyword') }}" style="min-width:180px; max-width:420px;">
       <select name="type" class="form-select" style="width:150px;">
@@ -63,16 +63,16 @@
   <form id="bulkDeleteForm" action="{{ route('files.bulkDelete') }}" method="POST">
     @csrf
     @method('DELETE')
-    <input type="hidden" name="selected_files" id="selectedFilesInput">
 
     {{-- === GRID VIEW === --}}
     <div id="gridView" class="row g-3">
-      @forelse($files as $file)
-        @include('files.partials.file-grid', ['file' => $file])
-      @empty
-        <div class="col-12 text-center py-5 text-muted">Tidak ada file ditemukan.</div>
-      @endforelse
-    </div>
+    @forelse($files as $file)
+      @include('files.partials.file-grid', ['file' => $file])
+    @empty
+      <div class="col-12 text-center py-5 text-muted">Tidak ada file ditemukan.</div>
+    @endforelse
+  </div>
+</form>
 
     {{-- === LIST VIEW === --}}
     <div id="listView" class="d-none">
@@ -107,7 +107,7 @@
 }
 
 .toolbar-actions {
-  min-height: 38px; /* tinggi minimal agar tidak turun */
+  min-height: 38px; 
   display: flex;
   align-items: center;
 }

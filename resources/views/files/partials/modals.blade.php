@@ -111,6 +111,10 @@
   {{-- =========================
        EDIT FILE NAME MODAL
        ========================= --}}
+  @php
+      $filenameWithoutExt = pathinfo($file->file_name, PATHINFO_FILENAME);
+      $fileExt = pathinfo($file->file_name, PATHINFO_EXTENSION);
+  @endphp
 <div class="modal fade" id="editFileModal{{ $file->id }}" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <form action="{{ route('files.update', $file->id) }}" method="POST" class="modal-content rounded-4 bg-white">
@@ -125,10 +129,14 @@
       <div class="modal-body">
         <div class="mb-3">
           <label>Nama Baru</label>
-          <input type="text" name="file_name" class="form-control" value="{{ $file->file_name }}" required>
+          <div class="input-group">
+            {{-- Hanya nama tanpa ekstensi di input --}}
+            <input type="text" name="file_name" class="form-control" value="{{ $filenameWithoutExt }}" required>
+            {{-- Tampilkan ekstensi di samping input --}}
+            <span class="input-group-text">.{{ $fileExt }}</span>
+          </div>
         </div>
       </div>
-
       <div class="modal-footer bg-white">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -165,7 +173,6 @@
           </select>
         </div>
       </div>
-
       <div class="modal-footer bg-white">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
         <button type="submit" class="btn btn-primary">Pindahkan</button>

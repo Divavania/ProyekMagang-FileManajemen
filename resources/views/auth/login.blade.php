@@ -190,3 +190,22 @@
   </script>
 </body>
 </html>
+
+<style>
+  /* Hilangkan icon default password reveal (Edge & Chromium) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+input[type="password"]::-webkit-textfield-decoration-container {
+    display: none !important;
+}
+
+input[type="password"]::-webkit-clear-button,
+input[type="password"]::-webkit-inner-spin-button,
+input[type="password"]::-webkit-outer-spin-button {
+    display: none !important;
+}
+
+</style>

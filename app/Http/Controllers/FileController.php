@@ -101,8 +101,7 @@ class FileController extends Controller
 
         logActivity("Menghapus File", "Memindahkan file {$file->file_name} ke sampah");
 
-        // Jangan hapus file fisik saat soft delete
-        $file->delete(); // cukup soft delete, file fisik tetap ada
+        $file->delete(); 
 
         return redirect()->route('files.index')->with('success', 'File berhasil dipindahkan ke sampah.');
     }
