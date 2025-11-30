@@ -32,7 +32,7 @@
         <input type="file" name="file" class="form-control" required>
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Ungah</button>
+        <button type="submit" class="btn btn-primary">Unggah</button>
       </div>
     </form>
   </div>
