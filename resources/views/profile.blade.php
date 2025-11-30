@@ -71,7 +71,7 @@
       <div class="col-md-8">
         <!-- Update Info -->
         <h5 class="fw-bold mb-3"><i class="bi bi-person-circle me-2"></i>Informasi Akun</h5>
-        <form method="POST" action="{{ route('profile.updateInfo') }}">
+        <form id="updateInfoForm" method="POST" action="{{ route('profile.updateInfo') }}">
           @csrf
           <div class="mb-3">
             <label class="form-label">Nama Lengkap</label>
@@ -90,7 +90,7 @@
 
         <!-- Update Password -->
         <h5 class="fw-bold mb-3"><i class="bi bi-shield-lock me-2"></i>Ganti Kata Sandi</h5>
-        <form method="POST" action="{{ route('profile.updatePassword') }}">
+        <form id="updatePasswordForm" method="POST" action="{{ route('profile.updatePassword') }}">
           @csrf
           <div class="mb-3">
             <label class="form-label">Kata Sandi Saat Ini</label>
@@ -123,6 +123,14 @@
 </div>
 
 <script>
+  setTimeout(function() {
+    let alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+      alert.classList.add('fade');
+      setTimeout(() => alert.remove(), 500);
+    });
+  }, 3000);
+
   function previewProfile(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -159,12 +167,9 @@
   function showFullImage(element) {
     const modal = document.getElementById('imageModal');
     const img = document.getElementById('fullImage');
-    
+
     if (element.tagName === 'IMG') {
       img.src = element.src;
-      img.style.backgroundColor = 'transparent';
-      img.style.width = 'auto';
-      img.style.height = 'auto';
     } else {
       const canvas = document.createElement('canvas');
       canvas.width = 400;
@@ -193,13 +198,11 @@
     button.addEventListener('click', function(e) {
       e.preventDefault();
       Swal.fire({
-        toast: true,
-        position: 'top-center',
         icon: 'warning',
         title: 'Hapus foto profil?',
-        showConfirmButton: true,
+        text: 'Foto akan dihapus permanen.',
         showCancelButton: true,
-        confirmButtonText: 'Ya, hapus!',
+        confirmButtonText: 'Ya, hapus',
         cancelButtonText: 'Batal'
       }).then((result) => {
         if (result.isConfirmed) {
@@ -208,5 +211,51 @@
       });
     });
   });
+
+  const updateInfoForm = document.querySelector('form[action="{{ route('profile.updateInfo') }}"]');
+  if (updateInfoForm) {
+    updateInfoForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'question',
+        title: 'Simpan perubahan?',
+        text: 'Nama dan email akan diperbarui.',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, simpan',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.submit();
+        }
+      });
+    });
+  }
+
+  const updatePasswordForm = document.querySelector('form[action="{{ route('profile.updatePassword') }}"]');
+  if (updatePasswordForm) {
+    updatePasswordForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'warning',
+        title: 'Ganti kata sandi?',
+        text: 'Pastikan password baru sudah benar.',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, ganti',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.submit();
+        }
+      });
+    });
+  }
+
 </script>
+
+<style>
+  .alert.fade {
+    opacity: 0;
+    transition: opacity .5s ease-in-out;
+  }
+</style>
 @endsection
