@@ -117,7 +117,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/files/{id}/move', [FileController::class, 'move'])->name('files.move');
     Route::put('/files/{id}/status', [FileController::class, 'updateStatus'])->name('files.status');
     Route::get('/files/download/{id}', [FileController::class, 'download'])->name('files.download');
-    Route::delete('/files/bulk-delete', [FileController::class, 'bulkDelete'])->name('files.bulkDelete');
+    Route::post('/files/bulk-delete', [FileController::class, 'bulkDelete'])->name('files.bulkDelete');
 
     // ========== NOTIFICATIONS ==========
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

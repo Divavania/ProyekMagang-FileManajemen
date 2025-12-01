@@ -232,7 +232,7 @@ class FolderController extends Controller
             }
         }
 
-        logActivity('upload_folder', 'Upload folder menggunakan drag & drop');
+        logActivity('Upload Folder',  "Mengupload folder {$folderName} menggunakan drag & drop");
 
         return response()->json(['success' => true, 'message' => 'Folders uploaded successfully!']);
     }
@@ -310,7 +310,7 @@ class FolderController extends Controller
             }
 
             logActivity(
-                'upload_folder', 
+                'Upload Folder', 
                 'Mengunggah folder dengan ' . $uploadedCount . ' file'
             );
 
