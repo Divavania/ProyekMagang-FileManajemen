@@ -8,7 +8,8 @@
 
     {{-- Checkbox + Favorite + Dropdown --}}
     <div class="position-absolute top-0 start-0 m-2">
-     <input type="checkbox" class="form-check-input select-checkbox d-none" name="selected_files[]" value="{{ $file->id }}">
+    <input type="checkbox" class="form-check-input select-checkbox d-none"
+       name="selected_files[]" value="{{ $file->id }}">
     </div>
 
 <div class="position-absolute top-0 end-0 m-2">

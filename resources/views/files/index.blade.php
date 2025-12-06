@@ -11,7 +11,7 @@
   {{-- === Toolbar === --}}
    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
     <form id="searchForm" class="d-flex gap-2 align-items-center flex-grow-1 flex-wrap" method="GET" action="{{ route('files.index') }}">
-      <input type="text" name="keyword" class="form-control" placeholder="Cari file..." value="{{ request('keyword') }}" style="min-width:180px; max-width:420px;">
+      <input type="text" name="keyword" class="form-control flex-grow-1" placeholder="Cari file..." value="{{ request('keyword') }}" style="min-width:200px; max-width:320px;">
       <select name="type" class="form-select" style="width:150px;">
         <option value="semua" {{ request('type')=='semua' ? 'selected' : '' }}>Semua</option>
         <option value="dokumen" {{ request('type')=='dokumen' ? 'selected' : '' }}>Dokumen</option>
@@ -31,14 +31,17 @@
     </form>
 
    <div class="d-flex align-items-center gap-2 toolbar-actions">
+      <button id="selectAllToggle" class="btn btn-outline-secondary btn-sm d-none">
+        <i class="bi bi-check-all me-1"></i>Pilih Semua
+      </button>
       <button id="toggleSelectMode" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-check2-square me-1"></i>Pilih File
       </button>
       <button id="deleteSelected" class="btn btn-danger btn-sm d-none">
-        <i class="bi bi-trash me-1"></i>Hapus Terpilih
+        <i class="bi bi-trash me-1"></i>Hapus
       </button>
       <button id="toggleView" class="btn btn-outline-primary btn-sm">
-        <i class="bi bi-list"></i> Tampilan Daftar
+        <i class="bi bi-list"></i> 
       </button>
     </div>
   </div>
@@ -62,7 +65,7 @@
        {{-- === Bulk Delete Form === --}}
   <form id="bulkDeleteForm" action="{{ route('files.bulkDelete') }}" method="POST">
     @csrf
-    @method('DELETE')
+      </form>
 
     {{-- === GRID VIEW === --}}
     <div id="gridView" class="row g-3">
@@ -71,6 +74,7 @@
     @empty
       <div class="col-12 text-center py-5 text-muted">Tidak ada file ditemukan.</div>
     @endforelse
+  </div>
   </div>
 </form>
 
@@ -123,39 +127,21 @@ document.addEventListener('DOMContentLoaded', function() {
   const gridView = document.getElementById('gridView');
   const listView = document.getElementById('listView');
 
-  // === Toggle grid/list view ===
   toggleViewBtn.addEventListener('click', () => {
-    const isGridVisible = !gridView.classList.contains('d-none');
+    const gridHidden = gridView.classList.contains('d-none');
 
-    if (isGridVisible) {
-      // switch ke daftar
-      gridView.classList.add('d-none');
-      listView.classList.remove('d-none');
-      toggleViewBtn.innerHTML = '<i class="bi bi-grid"></i> Tampilan Petak';
+    if (gridHidden) {
+        // munculkan grid, sembunyikan list
+        gridView.classList.remove('d-none');
+        listView.classList.add('d-none');
+        toggleViewBtn.innerHTML = '<i class="bi bi-list"></i>';
     } else {
-      // switch ke petak
-      listView.classList.add('d-none');
-      gridView.classList.remove('d-none');
-      toggleViewBtn.innerHTML = '<i class="bi bi-list"></i> Tampilan Daftar';
+        // munculkan list, sembunyikan grid
+        gridView.classList.add('d-none');
+        listView.classList.remove('d-none');
+        toggleViewBtn.innerHTML = '<i class="bi bi-grid"></i>';
     }
-  });
-
-  // Toggle mode pilih file
-toggleSelectBtn.addEventListener('click', () => {
-  const checkboxes = document.querySelectorAll('.select-checkbox');
-  const show = checkboxes.length && checkboxes[0].classList.contains('d-none');
-
-  checkboxes.forEach(cb => cb.classList.toggle('d-none', !show));
-  deleteSelectedBtn.classList.toggle('d-none', !show);
-
-  // Ubah label tombol agar jelas
-  if (show) {
-    toggleSelectBtn.innerHTML = '<i class="bi bi-x-circle me-1"></i>Batal';
-  } else {
-    toggleSelectBtn.innerHTML = '<i class="bi bi-check2-square me-1"></i>Pilih File';
-  }
 });
-
 
   // === Delete Selected ===
 deleteSelectedBtn.addEventListener('click', (e) => {
@@ -191,6 +177,47 @@ deleteSelectedBtn.addEventListener('click', (e) => {
     }
   });
 });
+
+//Pilih Semua
+const selectAllToggle = document.getElementById('selectAllToggle');
+
+function getAllCheckboxes() {
+  return document.querySelectorAll('.select-checkbox');
+}
+
+// === Saat Pilih File diaktifkan / dimatikan ===
+toggleSelectBtn.addEventListener('click', () => {
+  const checkboxes = getAllCheckboxes();
+  const show = checkboxes.length && checkboxes[0].classList.contains('d-none');
+
+  checkboxes.forEach(cb => cb.classList.toggle('d-none', !show));
+  deleteSelectedBtn.classList.toggle('d-none', !show);
+
+  // tampilkan tombol pilih semua HANYA saat mode pilih file aktif
+  selectAllToggle.classList.toggle('d-none', !show);
+
+  // Ubah label tombol agar jelas
+  toggleSelectBtn.innerHTML = show
+    ? '<i class="bi bi-x-circle me-1"></i>Batal'
+    : '<i class="bi bi-check2-square me-1"></i>Pilih File';
+});
+
+
+// === PILIH SEMUA ===
+selectAllToggle.addEventListener('click', () => {
+  const checkboxes = getAllCheckboxes();
+  const allChecked = [...checkboxes].every(cb => cb.checked);
+
+  // kalau semua sudah ke-centang → jadikan unselect all
+  checkboxes.forEach(cb => cb.checked = !allChecked);
+
+  
+
+  // tampilin / sembunyikan tombol hapus terpilih
+  const anyChecked = [...checkboxes].some(cb => cb.checked);
+  deleteSelectedBtn.classList.toggle('d-none', !anyChecked);
+});
+
 
   // === Single Delete ===
   document.querySelectorAll('.btn-delete').forEach(btn => {

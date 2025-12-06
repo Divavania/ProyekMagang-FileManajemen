@@ -99,7 +99,10 @@ class FileController extends Controller
     {
         $file = File::where('id', $id)->where('uploaded_by', Auth::id())->firstOrFail();
 
-        logActivity("Menghapus File", "Memindahkan file {$file->file_name} ke sampah");
+        logActivity(
+            "Memindahkan ke sampah",
+            "Memindahkan file {$file->file_name} ke sampah"
+        );
 
         $file->delete(); 
 
@@ -108,28 +111,38 @@ class FileController extends Controller
 
     // Bulk delete file
     public function bulkDelete(Request $request)
-    {
-        $ids = $request->input('selected_files', []);
+{
+    // Ambil ID yang dikirim dari form
+    $ids = $request->input('selected_files', []);
 
-        if (empty($ids)) {
-            return redirect()->route('files.index')
-                ->with('error', 'Tidak ada file yang dipilih.');
-        }
-
-        // Ambil semua file milik user
-        $files = File::whereIn('id', $ids)
-            ->where('uploaded_by', Auth::id())
-            ->get();
-
-        foreach ($files as $file) {
-            $file->delete(); // Soft delete — masuk ke menu Sampah
-        }
-
-        logActivity("Memindahkan ke sampah beberapa file: " . implode(', ', $files->pluck('file_name')->toArray()));
-
+    if (empty($ids)) {
         return redirect()->route('files.index')
-            ->with('success', 'File terpilih berhasil dipindahkan ke sampah.');
+            ->with('error', 'Tidak ada file yang dipilih.');
     }
+
+    // Ambil file yang sesuai milik user
+    $files = File::whereIn('id', $ids)
+        ->where('uploaded_by', Auth::id())
+        ->get();
+
+    if ($files->isEmpty()) {
+        return redirect()->route('files.index')
+            ->with('error', 'Tidak ada file valid untuk dihapus.');
+    }
+
+    foreach ($files as $file) {
+        $file->delete(); // soft delete
+    }
+
+    logActivity(
+        "Bulk Delete",
+        "Memindahkan ke sampah beberapa file: " . implode(', ', $files->pluck('file_name')->toArray())
+    );
+
+    return redirect()->route('files.index')
+        ->with('success', 'File terpilih berhasil dipindahkan ke sampah.');
+}
+
 
     // Update nama file
     public function update(Request $request, $id)

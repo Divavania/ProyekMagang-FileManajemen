@@ -8,7 +8,7 @@
   <div class="d-flex align-items-center flex-grow-1 gap-3">
 
     {{-- Checkbox --}}
-    <input type="checkbox" class="form-check-input select-checkbox d-none me-2" name="selected[]" value="{{ $file->id }}">
+    <input type="checkbox" class="form-check-input select-checkbox d-none me-2" name="selected_files[]" value="{{ $file->id }}">
 
   {{-- Thumbnail Clickable --}}
     <div class="cursor-pointer"
