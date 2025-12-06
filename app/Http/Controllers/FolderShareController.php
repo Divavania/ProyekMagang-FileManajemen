@@ -81,6 +81,7 @@ class FolderShareController extends Controller
             abort(403);
         }
 
+        $folderName = optional($share->folder)->name ?? 'Folder Tidak Diketahui';
         $share->delete();
 
         // LOG ACTIVITY 

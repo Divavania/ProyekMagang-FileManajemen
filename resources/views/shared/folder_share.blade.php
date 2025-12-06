@@ -38,9 +38,11 @@
                             <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#shareFolderModal{{ $folder->id }}"><i class="bi bi-share me-2"></i> Berbagi</button></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <form action="{{ route('shared.folders.remove', $share->id) }}" method="POST">
+                                <form action="{{ route('shared.folders.remove', $share->id) }}" method="POST" class="d-inline">
                                     @csrf @method('DELETE')
-                                    <button class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i> Hapus</button>
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="bi bi-trash me-2"></i> Hapus
+                                    </button>
                                 </form>
                             </li>
                         </ul>
@@ -69,9 +71,11 @@
                             <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#shareFolderModal{{ $folder->id }}"><i class="bi bi-share me-2"></i> Berbagi</button></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <form action="{{ route('shared.folders.remove', $share->id) }}" method="POST">
+                                <form action="{{ route('shared.folders.remove', $share->id) }}" method="POST" class="d-inline">
                                     @csrf @method('DELETE')
-                                    <button class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i> Hapus</button>
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="bi bi-trash me-2"></i> Hapus
+                                    </button>
                                 </form>
                             </li>
                         </ul>

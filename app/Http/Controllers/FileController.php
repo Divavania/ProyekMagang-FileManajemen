@@ -263,28 +263,29 @@ class FileController extends Controller
     {
         $file = File::findOrFail($id);
 
-        if ($file->uploaded_by != Auth::id()) {
-            abort(403);
+        // Cek user non-aktif → tolak
+        if(auth()->user()->status === 'Nonaktif'){
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun anda nonaktif. Tidak dapat mengubah status file atau menerima share.'
+            ], 403);
         }
 
-        if ($file->folder_id) {
-            $folder = $file->folder;
-            // Jangan izinkan ubah status jika file berasal dari folder
-            return back()->with('error', 'File ini berasal dari folder. Ubah status foldernya untuk mempengaruhi semua file di dalamnya.');
+        // Jika file berada di folder → tidak boleh ubah
+        if($file->folder_id !== null){
+            return response()->json([
+                'success' => false,
+                'message' => 'File ini berasal dari folder. Ubah status folder untuk mempengaruhi file.'
+            ], 403);
         }
 
-        $newStatus = $request->filled('status')
-            ? $request->status
-            : ($file->status === 'Private' ? 'Public' : 'Private');
-
-        $file->status = $newStatus;
+        // Update status
+        $file->status = $request->status;
         $file->save();
 
-        if ($newStatus === 'Public') {
-            // Hapus semua share karena sudah public
-            $file->shares()->delete();
-        }
-
-        return back()->with('success', "Status berhasil diubah menjadi {$newStatus}");
+        return response()->json([
+            'success' => true,
+            'new_status' => $file->status
+        ]);
     }
 }

@@ -72,7 +72,7 @@ $invalidFolderIds = array_merge([$folder->id], $getSubfolderIds($folder));
 
 <div class="modal fade" id="shareFolderModal{{ $folder->id }}" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <form class="modal-content" method="POST" action="{{ route('folders.share', $folder->id) }}">
+    <form class="modal-content shareFolderForm" method="POST" action="{{ route('folders.share', $folder->id) }}" data-folder-id="{{ $folder->id }}">
       @csrf
 
       <div class="modal-header">
@@ -104,3 +104,42 @@ $invalidFolderIds = array_merge([$folder->id], $getSubfolderIds($folder));
     </form>
   </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+    $('.shareFolderForm').submit(function(e) {
+        e.preventDefault();
+
+        let form = $(this);
+        let folderId = form.data('folder-id');
+        let url = '/folders/share/' + folderId; // sesuaikan route store
+        let data = form.serialize();
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: response.message || 'Folder berhasil dibagikan.',
+                });
+                form.trigger('reset');
+                form.closest('.modal').modal('hide'); // tutup modal setelah sukses
+            },
+            error: function(xhr) {
+                let errorMsg = 'Terjadi kesalahan!';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: errorMsg,
+                });
+            }
+        });
+    });
+});
+</script>

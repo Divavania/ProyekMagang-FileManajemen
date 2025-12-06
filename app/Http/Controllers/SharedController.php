@@ -96,8 +96,15 @@ class SharedController extends Controller
         $sharedCount = 0;
 
         foreach ($emails as $email) {
-            $receiver = User::where('email', $email)->first();
-            if (!$receiver) continue;
+        $receiver = User::where('email', $email)->first();
+
+        if (!$receiver) {
+            continue;
+        }
+
+        if (strtolower($receiver->status) == 'nonaktif') {
+            continue;
+        }
 
             // Simpan data share
             Share::create([
@@ -110,6 +117,10 @@ class SharedController extends Controller
             // Kirim notifikasi (via database dan/atau email)
             $receiver->notify(new SharedNotification( $file, Auth::user(),'file', $request->message));
             $sharedCount++;
+        }
+
+        if ($sharedCount === 0) {
+            return back()->with('error', 'File gagal dibagikan. Semua user yang dituju nonaktif atau tidak ditemukan.');
         }
 
         // LOG ACTIVITY

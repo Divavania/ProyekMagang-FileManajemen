@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.style.display = 'none';
   });
 });
-document.addEventListener('DOMContentLoaded', () => {s
+document.addEventListener('DOMContentLoaded', () => {
 
 // Notifikasi: klik item -> tandai dibaca via AJAX
   const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');

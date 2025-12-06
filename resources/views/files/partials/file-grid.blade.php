@@ -199,23 +199,3 @@
     visibility: visible;
 }
 </style>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.dropdown-item.toggle-status-btn').forEach(btn => {
-        btn.addEventListener('click', function(e){
-            e.preventDefault();
-            let fileId = this.dataset.id;
-            let status = this.dataset.status;
-
-            fetch(`/files/${fileId}/status`, {
-                method: 'PUT',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({status})
-            }).then(res => location.reload()); // reload setelah update
-        });
-    });
-});
-</script>

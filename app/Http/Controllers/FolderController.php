@@ -119,8 +119,7 @@ class FolderController extends Controller
                 ->with('success', 'Folder berhasil diperbarui.');
         }
 
-        return redirect()->route('folders.index')
-            ->with('success', 'Folder berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Nama folder berhasil diubah.');
     }
 
     // Hapus folder (soft delete)

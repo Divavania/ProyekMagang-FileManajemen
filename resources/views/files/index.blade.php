@@ -264,7 +264,53 @@ deleteSelectedBtn.addEventListener('click', (e) => {
       }
     });
   });
+document.querySelectorAll('.toggle-status-btn').forEach(btn => {
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+
+            let button = this;
+            let fileId = button.dataset.id;
+            let newStatus = button.dataset.status;
+
+            fetch(`/files/${fileId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: newStatus })
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                if(!data.success){
+                    showStatusAlert('error', data.message);
+                    return;
+                }
+
+                showStatusAlert('success', "Status berhasil diubah!");
+
+                if(data.new_status === "Public"){
+                    button.innerHTML = `<i class="bi bi-lock me-2 text-warning"></i>Jadikan Privat`;
+                    button.dataset.status = "Private";
+                } else {
+                    button.innerHTML = `<i class="bi bi-unlock me-2 text-success"></i>Jadikan Publik`;
+                    button.dataset.status = "Public";
+                }
+            });
+        });
+    });
 });
+
+window.showStatusAlert = function(type, message) {
+    Swal.fire({
+        icon: type,
+        title: type === 'success' ? 'Berhasil' : 'Gagal',
+        text: message,
+        timer: 1800,
+        showConfirmButton: false
+    });
+}
 </script>
 
 
